@@ -6,8 +6,7 @@
 	$directions = explode(',', $input);
 
 	$dirs = [['N', 0, 1], ['E', 1, 0], ['S', 0, -1], ['W', -1, 0]];
-	$x = $y = 0;
-	$dir = 0;
+	$dir = $x = $y = 0;
 	$visted = [];
 	$firstTwice = null;
 
@@ -43,18 +42,13 @@
 			}
 		}
 
-		if (isDebug()) {
-			echo '    Now: ', $dirs[$dir][0], '[', $x, ',', $y, ']', "\n";
-		}
+		if (isDebug()) { echo '    Now: ', $dirs[$dir][0], '[', $x, ',', $y, ']', "\n"; }
 	}
 
 	if (isDebug()) { echo "\n"; }
-
-
 	echo 'Final Location: ', $dirs[$dir][0], '[', $x, ',', $y, '] => Blocks away: ', (abs($x) + abs($y)), "\n";
 
 	if ($firstTwice !== null) {
-		$x = $firstTwice[0];
-		$y = $firstTwice[1];
+		list($x, $y) = $firstTwice;
 		echo 'First Duplicate Visit: [', $x, ',', $y, '] => Blocks away: ', (abs($x) + abs($y)), "\n";
 	}
