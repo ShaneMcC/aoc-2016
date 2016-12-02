@@ -217,7 +217,7 @@ $wreath     ';;;,  ${bow}_  _$wreath  ,;;;'
 $wreath      ';${berry}o$wreath;;$bow/_\/_\\$wreath;;${berry}o$wreath;'
 $name  jgs $wreath  ';;$bow\_\/_/$wreath;;'
 $bow           '//\\\'
-$bow           //  \\\ $reset  Advent of Code 2015
+$bow           //  \\\ $reset  Advent of Code 2016
 $bow          |/    \| $reset - ShaneMcC
 $reset
 
