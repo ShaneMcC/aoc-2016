@@ -186,6 +186,18 @@
 		return $result;
 	}
 
+	/**
+	 * modulus function that calculates the modulus of a number wrapping
+	 * negative results backwards if required.
+	 *
+	 * @param $num Number
+	 * @param $mod Modulus
+	 * @return Answer.
+	 */
+	function wrapmod($num, $mod) {
+		return (($num % $mod) + $mod) % $mod;
+	}
+
 
 	/**
 	 * Get an ascii Wreath as a string.

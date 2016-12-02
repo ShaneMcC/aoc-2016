@@ -23,13 +23,7 @@
 			echo '    Was: ', $dirs[$dir][0], '[', $x, ',', $y, ']', "\n";
 		}
 
-		// Re-orient
-		if ($face == 'R') {
-			$dir = ($dir + 1) % count($dirs);
-		} else if ($face == 'L') {
-			$dir = $dir - 1;
-			if ($dir < 0) { $dir = count($dirs) - 1; }
-		}
+		$dir = wrapmod($dir + ($face == 'R' ? '1' : '-1'), count($dirs));
 
 		for ($i = 0; $i < $move; $i++) {
 			$x += $dirs[$dir][1];
