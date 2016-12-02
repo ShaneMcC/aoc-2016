@@ -2,8 +2,8 @@
 	$answers = array('1' => array(), '2' => array());
 
 	// Day 1
-	$answers[1][1] = 0;
-	$answers[2][1] = 0;
+	$answers[1][1] = 307;
+	$answers[2][1] = 165;
 
 	// Day 2
 	$answers[1][2] = 0;
