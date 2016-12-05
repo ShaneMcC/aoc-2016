@@ -14,7 +14,7 @@
 	$answers[2][3] = 1849;
 
 	// Day 4
-	$answers[1][4] = 0;
+	$answers[1][4] = 137896;
 	$answers[2][5] = 0;
 
 	// Day 5
