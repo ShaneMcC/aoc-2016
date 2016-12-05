@@ -21,7 +21,22 @@
 		return $calcSum == $checksum;
 	}
 
-	$part1 = 0;
+	function decryptSectorName($name, $sector) {
+		$letters = str_split('abcdefghijklmnopqrstuvqxyz');
+
+		$name = str_split($name);
+		for ($i = 0; $i < count($name); $i++) {
+			if ($name[$i] == '-') {
+				$name[$i] = ' ';
+			} else {
+				$name[$i] = $letters[(array_search($name[$i], $letters) + $sector) % count($letters)];
+			}
+		}
+
+		return implode('', $name);
+	}
+
+	$part1 = $part2 = 0;
 	foreach ($input as $details) {
 		preg_match('#([a-z\-]+)-([0-9]+)\[([a-z]{5})\]#i', $details, $m);
 		list($all, $name, $sector, $checksum) = $m;
@@ -29,7 +44,14 @@
 		$valid = isValidSector($name, $checksum);
 		debugOut('Sector ', $sector, ': ', $name, ' [', $checksum, '] => ', ($valid ? 'VALID' : 'BAD'), "\n");
 
-		if ($valid) { $part1 += $sector; }
+		if ($valid) {
+			$part1 += $sector;
+
+			$decrypted = decryptSectorName($name, $sector);
+			debugOut("\t", $decrypted, "\n");
+			if ($decrypted == 'northpole object storage') { $part2 = $sector; }
+		}
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', $part2, "\n";
