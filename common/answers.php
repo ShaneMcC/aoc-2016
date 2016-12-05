@@ -19,7 +19,7 @@
 
 	// Day 5
 	$answers[1][5] = 'c6697b55';
-	$answers[2][5] = 0;
+	$answers[2][5] = '8c35d1ab';
 
 	// Day 6
 	$answers[1][6] = 0;
