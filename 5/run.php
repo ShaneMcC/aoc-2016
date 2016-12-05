@@ -4,18 +4,17 @@
 	$input = getInputLine();
 
 	$i = 0;
+	$length = 8;
 	$password1 = '';
-	$password2 = str_split('        ');
-	while (strlen($password1) < 8 || in_array(' ', $password2)) {
+	$password2 = array_fill(0, $length, ' ');
+	while (strlen($password1) < $length || in_array(' ', $password2)) {
 		$test = md5($input . $i++);
 		if (startswith($test, '00000')) {
-			if (strlen($password1) < 8) {
-				$password1 .= $test{5};
-			}
-			if ($test{5} >= 0 && $test{5} < 8 && isset($password2[$test{5}]) && $password2[$test{5}] == ' ') {
-				$password2[$test{5}] = $test{6};
-			}
-			debugOut(sprintf('%10s - 1:[%8s] 2:[%8s] - %s', $i, $password1, implode('', $password2), $test), "\n");
+			$changed = false;
+			if (strlen($password1) < $length) { $password1 .= $test{5}; $changed = true; }
+			if (isset($password2[$test{5}]) && $password2[$test{5}] == ' ') { $password2[$test{5}] = $test{6}; $changed = true; }
+
+			if ($changed) { debugOut(sprintf('%10s - 1:[%'.$length.'s] 2:[%'.$length.'s] - %s', $i, $password1, implode('', $password2), $test), "\n"); }
 		}
 	}
 
