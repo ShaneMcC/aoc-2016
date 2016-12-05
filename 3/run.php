@@ -22,17 +22,15 @@
 
 	echo 'Part 1: ', $possible, ' triangles are possible out of ', $total, "\n";
 
-
 	$total = $possible = 0;
-	$lines = [];
 	for ($i = 0; $i < count($input); $i += 3) {
-		$lines[] = getSides($input[$i]);
-		$lines[] = getSides($input[$i + 1]);
-		$lines[] = getSides($input[$i + 2]);
+		$line1 = getSides($input[$i]);
+		$line2 = getSides($input[$i + 1]);
+		$line3 = getSides($input[$i + 2]);
 
-		if (isPossible([$lines[$i][0], $lines[$i + 1][0], $lines[$i + 2][0]])) { $possible++; }
-		if (isPossible([$lines[$i][1], $lines[$i + 1][1], $lines[$i + 2][1]])) { $possible++; }
-		if (isPossible([$lines[$i][2], $lines[$i + 1][2], $lines[$i + 2][2]])) { $possible++; }
+		if (isPossible([$line1[0], $line2[0], $line3[0]])) { $possible++; }
+		if (isPossible([$line1[1], $line2[1], $line3[1]])) { $possible++; }
+		if (isPossible([$line1[2], $line2[2], $line3[2]])) { $possible++; }
 		$total += 3;
 	}
 
