@@ -198,6 +198,33 @@
 		return (($num % $mod) + $mod) % $mod;
 	}
 
+	/**
+	 * Check if a string starts with another.
+	 *
+	 * @param $haystack Haystack to search
+	 * @param $needle Needle to search for
+	 * @return True if $haystack starts with $needle.
+	 */
+	function startsWith($haystack, $needle) {
+		$length = strlen($needle);
+		return (substr($haystack, 0, $length) === $needle);
+	}
+
+	/**
+	 * Check if a string ends with another.
+	 *
+	 * @param $haystack Haystack to search
+	 * @param $needle Needle to search for
+	 * @return True if $haystack ends with $needle.
+	 */
+	function endsWith($haystack, $needle) {
+		$length = strlen($needle);
+		if ($length == 0) {
+			return true;
+		}
+
+		return (substr($haystack, -$length) === $needle);
+	}
 
 	/**
 	 * Get an ascii Wreath as a string.

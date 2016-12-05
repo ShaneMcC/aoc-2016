@@ -18,7 +18,7 @@
 	$answers[2][4] = 501;
 
 	// Day 5
-	$answers[1][5] = 0;
+	$answers[1][5] = 'c6697b55';
 	$answers[2][5] = 0;
 
 	// Day 6
