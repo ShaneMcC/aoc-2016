@@ -7,7 +7,7 @@
 
 	// Day 2
 	$answers[1][2] = 45973;
-	$answers[2][2] = 0;
+	$answers[2][2] = '27CA4';
 
 	// Day 3
 	$answers[1][3] = 0;
