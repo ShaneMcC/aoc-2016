@@ -5,7 +5,7 @@
 
 	$lines = [];
 	$part1 = $part2 = '';
-	foreach ($input as $line) { $lines[] = str_split(trim($line)); }
+	$lines = array_map('str_split', $input);
 
 	for ($i = 0; $i < count($lines[0]); $i++) {
 		$keys = count_chars(implode('', array_column($lines, $i)), 1);
