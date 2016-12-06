@@ -199,6 +199,20 @@
 	}
 
 	/**
+	 * Sort an array using the given method, and return the result of the sort.
+	 *
+	 * @param $method Method to use for sorting (eg, 'arsort')
+	 * @param $array Array to sort
+	 * @param $extra (Default: null) Some of the sorting functions take an extra
+	 *               param. (Flags or a function or so.)
+	 * @return Sorted $array
+	 */
+	function sorted($method, $array, $extra = null) {
+		call_user_func_array($method, ($extra == null) ? [&$array] : [&$array, $extra]);
+		return $array;
+	}
+
+	/**
 	 * Check if a string starts with another.
 	 *
 	 * @param $haystack Haystack to search
