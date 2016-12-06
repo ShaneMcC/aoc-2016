@@ -22,7 +22,7 @@
 	$answers[2][5] = '8c35d1ab';
 
 	// Day 6
-	$answers[1][6] = 0;
+	$answers[1][6] = 'afwlyyyq';
 	$answers[2][6] = 0;
 
 	// Day 7
