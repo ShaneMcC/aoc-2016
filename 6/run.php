@@ -4,7 +4,7 @@
 	$input = getInputLines();
 
 	$counts = [];
-	$part1 = '';
+	$part1 = $part2 = '';
 
 	foreach ($input as $line) {
 		$bits = str_split(trim($line));
@@ -19,6 +19,8 @@
 		uksort($letters, function ($a, $b) use ($letters) { return ($letters[$a] == $letters[$b]) ? strcmp($a, $b) : $letters[$b] - $letters[$a]; });
 		$keys = array_keys($letters);
 		$part1 .= array_shift($keys);
+		$part2 .= array_pop($keys);
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', $part2, "\n";
