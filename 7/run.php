@@ -4,30 +4,13 @@
 	$input = getInputLines();
 
 	function hasABBA($string) {
-		debugOut('    hasABBA:', $string, "\n");
-		for ($i = 0; $i < strlen($string); $i++) {
-			if ($i + 3 >= strlen($string)) { continue; }
-			debugOut('        ', sprintf('[%s, %s, %s, %s]', $string{$i}, $string{$i+1}, $string{$i+2}, $string{$i+3}), "\n");
-			if ($string{$i} == $string{$i+3} && $string{$i+1} == $string{$i+2} && $string{$i} != $string{$i+1}) {
-				debugOut('        ABBA!', "\n");
-				return true;
-			}
-		}
+		return preg_match('#(.)((?:(?!\1).))\2\1#', $string);
 	}
 
 	function getABAs($string) {
-		$abas = [];
-		debugOut('    getABAs:', $string, "\n");
-		for ($i = 0; $i < strlen($string); $i++) {
-			if ($i + 2 >= strlen($string)) { continue; }
-			debugOut('        ', sprintf('[%s, %s, %s]', $string{$i}, $string{$i+1}, $string{$i+2}), "\n");
-			if ($string{$i} == $string{$i+2} && $string{$i} != $string{$i+1}) {
-				debugOut('        ABA!', "\n");
-				$abas[] = [$string{$i}.$string{$i+1}.$string{$i+2}, $string{$i+1}.$string{$i}.$string{$i+1}];
-			}
-		}
-
-		return $abas;
+		preg_match_all('#(?=((.)((?:(?!\2).))\2))#', $string, $abas);
+		$babs = preg_replace('#(.)(.).#', '\2\1\2', $abas[1]);
+		return array_combine($abas[1], $babs);
 	}
 
 	function supportsTLS($address) {
@@ -52,9 +35,9 @@
 		$abas = getABAs($address);
 
 		if (count($abas) > 0) {
-			foreach ($abas as $aba) {
+			foreach ($abas as $aba => $bab) {
 				foreach ($m[1] as $inbrackets) {
-					if (strpos($inbrackets, $aba[1]) !== false) {
+					if (strpos($inbrackets, $bab) !== false) {
 						return true;
 					}
 				}
@@ -66,13 +49,8 @@
 
 	$part1 = $part2 = 0;
 	foreach ($input as $address) {
-		debugOut('Address: ', $address, "\n");
-		$tls = supportsTLS($address);
-		$ssl = supportsSSL($address);
-		debugOut('    => TLS ', ($tls ? 'YES' : 'NO'), "\n");
-		debugOut('    => SSL ', ($ssl ? 'YES' : 'NO'), "\n");
-		if ($tls) { $part1++; }
-		if ($ssl) { $part2++; }
+		if (supportsTLS($address)) { $part1++; }
+		if (supportsSSL($address)) { $part2++; }
 	}
 
 	echo 'Part 1: ', $part1, "\n";
