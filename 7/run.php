@@ -3,23 +3,22 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	function hasABBA($string) {
-		return preg_match('#(.)((?:(?!\1).))\2\1#', $string);
+	function hasABBA($address) {
+		return preg_match('#(.)((?:(?!\1).))\2\1#', preg_replace('#(\[.*?\])#', '####', $address));
 	}
 
-	function getABAs($string) {
-		preg_match_all('#(?=((.)((?:(?!\2).))\2))#', $string, $abas);
+	function getABAs($address) {
+		preg_match_all('#(?=((.)((?:(?!\2).))\2))#', preg_replace('#(\[.*?\])#', '###', $address), $abas);
 		$babs = preg_replace('#(.)(.).#', '\2\1\2', $abas[1]);
 		return array_combine($abas[1], $babs);
 	}
 
 	function supportsTLS($address) {
-		$squares = preg_match_all('#(\[.*?\])#', $address, $m);
-		$address = preg_replace('#(\[.*?\])#', '####', $address);
+		preg_match_all('#\[(.*?)\]#', $address, $hypernets);
 
 		if (hasABBA($address)) {
-			foreach ($m[1] as $inbrackets) {
-				if (hasABBA($inbrackets)) {
+			foreach ($hypernets[1] as $hypernet) {
+				if (hasABBA($hypernet)) {
 					return false;
 				}
 			}
@@ -30,16 +29,13 @@
 	}
 
 	function supportsSSL($address) {
-		$squares = preg_match_all('#(\[.*?\])#', $address, $m);
-		$address = preg_replace('#(\[.*?\])#', '###', $address);
+		preg_match_all('#\[(.*?)\]#', $address, $hypernets);
 		$abas = getABAs($address);
 
-		if (count($abas) > 0) {
-			foreach ($abas as $aba => $bab) {
-				foreach ($m[1] as $inbrackets) {
-					if (strpos($inbrackets, $bab) !== false) {
-						return true;
-					}
+		foreach ($abas as $aba => $bab) {
+			foreach ($hypernets[1] as $hypernet) {
+				if (strpos($hypernet, $bab) !== false) {
+					return true;
 				}
 			}
 		}
