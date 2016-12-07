@@ -26,8 +26,8 @@
 	$answers[2][6] = 'bhkzekao';
 
 	// Day 7
-	$answers[1][7] = 0;
-	$answers[2][7] = 0;
+	$answers[1][7] = 118;
+	$answers[2][7] = 260;
 
 	// Day 8
 	$answers[1][8] = 0;

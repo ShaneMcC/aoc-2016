@@ -4,7 +4,7 @@
 	$input = getInputLines();
 
 	function hasABBA($string) {
-		debugOut('    Test:', $string, "\n");
+		debugOut('    hasABBA:', $string, "\n");
 		for ($i = 0; $i < strlen($string); $i++) {
 			if ($i + 3 >= strlen($string)) { continue; }
 			debugOut('        ', sprintf('[%s, %s, %s, %s]', $string{$i}, $string{$i+1}, $string{$i+2}, $string{$i+3}), "\n");
@@ -13,6 +13,21 @@
 				return true;
 			}
 		}
+	}
+
+	function getABAs($string) {
+		$abas = [];
+		debugOut('    getABAs:', $string, "\n");
+		for ($i = 0; $i < strlen($string); $i++) {
+			if ($i + 2 >= strlen($string)) { continue; }
+			debugOut('        ', sprintf('[%s, %s, %s]', $string{$i}, $string{$i+1}, $string{$i+2}), "\n");
+			if ($string{$i} == $string{$i+2} && $string{$i} != $string{$i+1}) {
+				debugOut('        ABA!', "\n");
+				$abas[] = [$string{$i}.$string{$i+1}.$string{$i+2}, $string{$i+1}.$string{$i}.$string{$i+1}];
+			}
+		}
+
+		return $abas;
 	}
 
 	function supportsTLS($address) {
@@ -29,15 +44,36 @@
 		}
 
 		return false;
-
 	}
 
-	$part1 = 0;
+	function supportsSSL($address) {
+		$squares = preg_match_all('#(\[.*?\])#', $address, $m);
+		$address = preg_replace('#(\[.*?\])#', '###', $address);
+		$abas = getABAs($address);
+
+		if (count($abas) > 0) {
+			foreach ($abas as $aba) {
+				foreach ($m[1] as $inbrackets) {
+					if (strpos($inbrackets, $aba[1]) !== false) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	$part1 = $part2 = 0;
 	foreach ($input as $address) {
-		debugOut('supportsTLS: ', $address, "\n");
-		$supported = supportsTLS($address);
-		debugOut('    => ', ($supported ? 'YES' : 'NO'), "\n");
-		if ($supported) { $part1++; }
+		debugOut('Address: ', $address, "\n");
+		$tls = supportsTLS($address);
+		$ssl = supportsSSL($address);
+		debugOut('    => TLS ', ($tls ? 'YES' : 'NO'), "\n");
+		debugOut('    => SSL ', ($ssl ? 'YES' : 'NO'), "\n");
+		if ($tls) { $part1++; }
+		if ($ssl) { $part2++; }
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', $part2, "\n";
