@@ -24,18 +24,15 @@
 	}
 
 	foreach ($input as $details) {
-		preg_match('#^(.*?) (.*)#', trim($details), $m);
-		list($all, $instr, $params) = $m;
+		preg_match('#^(rect|rotate) (?:(row|column) (?:x|y)=([0-9]+) by ([0-9]+)|([0-9]+)x([0-9]+))#', trim($details), $m);
+		$instr = $m[1];
 
 		if ($instr == "rect") {
-			preg_match('#([0-9]+)x([0-9]+)#', $params, $m);
-			list($all, $wx, $wy) = $m;
-
-			foreach (yieldXY(0, 0, $wx-1, $wy-1) as $col => $row) { $screen[$row][$col] = '#'; }
+			list($all, $instr, $_, $_, $_, $rX, $rY) = $m;
+			foreach (yieldXY(0, 0, $rX-1, $rY-1) as $col => $row) { $screen[$row][$col] = '#'; }
 
 		} else if ($instr == "rotate") {
-			preg_match('#(row|column) (?:x|y)=([0-9]+) by ([0-9]+)#', $params, $m);
-			list($all, $type, $which, $by) = $m;
+			list($all, $instr, $type, $which, $by) = $m;
 
 			if ($type == "row") {
 				$screen[$which] = rotateArray($screen[$which], $by);
@@ -55,3 +52,5 @@
 	echo 'Part 1: ', $part1, "\n";
 	echo 'Part 2: ', "\n";
 	drawScreen($screen);
+
+	// TODO: Calculate letter from screen...
