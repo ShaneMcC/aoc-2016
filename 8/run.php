@@ -54,3 +54,5 @@
 	foreach ($screen as $row) { $part1 += substr_count(implode('', $row), '#'); }
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', "\n";
+	drawScreen($screen);

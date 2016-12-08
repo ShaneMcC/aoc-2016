@@ -31,7 +31,7 @@
 
 	// Day 8
 	$answers[1][8] = 116;
-	$answers[2][8] = 0;
+	$answers[2][8] = 'UPOJFLBCEZ';
 
 	// Day 9
 	$answers[1][9] = 0;
