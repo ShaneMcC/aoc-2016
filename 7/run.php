@@ -4,11 +4,11 @@
 	$input = getInputLines();
 
 	function hasABBA($address) {
-		return preg_match('#(.)(?!\1)(.)\2\1#', preg_replace('#(\[.*?\])#', '####', $address));
+		return preg_match('@([^#])(?!\1)([^#])\2\1@', preg_replace('#(\[.*?\])#', '####', $address));
 	}
 
 	function getABAs($address) {
-		preg_match_all('#(?=((.)(?!\2).\2))#', preg_replace('#(\[.*?\])#', '###', $address), $abas);
+		preg_match_all('@(?=(([^#])(?!\2)[^#]\2))@', preg_replace('#(\[.*?\])#', '###', $address), $abas);
 		$babs = preg_replace('#(.)(.).#', '\2\1\2', $abas[1]);
 		return array_combine($abas[1], $babs);
 	}
