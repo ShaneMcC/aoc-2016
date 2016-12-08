@@ -30,7 +30,7 @@
 	$answers[2][7] = 260;
 
 	// Day 8
-	$answers[1][8] = 0;
+	$answers[1][8] = 116;
 	$answers[2][8] = 0;
 
 	// Day 9
