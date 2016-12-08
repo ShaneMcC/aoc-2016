@@ -4,15 +4,23 @@
 	$input = getInputLines();
 
 	if (isTest()) {
-		$screen = array_fill(0, 3, array_fill(0, 7, '.'));
+		$screen = array_fill(0, 3, array_fill(0, 7, ' '));
 	} else {
-		$screen = array_fill(0, 6, array_fill(0, 50, '.'));
+		$screen = array_fill(0, 6, array_fill(0, 50, ' '));
 	}
 
 	function drawScreen($screen) {
 		echo '==========', "\n";
 		foreach ($screen as $row) { echo "\t", implode('', $row), "\n"; }
 		echo '==========', "\n";
+	}
+
+	function rotateArray($array, $count) {
+		for ($i = 0; $i < $count; $i++) {
+			array_unshift($array, array_pop($array));
+		}
+
+		return $array;
 	}
 
 	foreach ($input as $details) {
@@ -23,27 +31,18 @@
 			preg_match('#([0-9]+)x([0-9]+)#', $params, $m);
 			list($all, $wx, $wy) = $m;
 
-			foreach (yieldXY(0, 0, $wx-1, $wy-1) as $x1 => $y1) {
-				if (isset($screen[$y1][$x1])) {
-					$screen[$y1][$x1] = '#';
-				}
-			}
+			foreach (yieldXY(0, 0, $wx-1, $wy-1) as $col => $row) { $screen[$row][$col] = '#'; }
+
 		} else if ($instr == "rotate") {
 			preg_match('#(row|column) (?:x|y)=([0-9]+) by ([0-9]+)#', $params, $m);
 			list($all, $type, $which, $by) = $m;
 
 			if ($type == "row") {
-				for ($i = 0; $i < $by; $i++) {
-					array_unshift($screen[$which], array_pop($screen[$which]));
-				}
+				$screen[$which] = rotateArray($screen[$which], $by);
 			} else if ($type == "column") {
-				$col = array_column($screen, $which);
-				for ($i = 0; $i < $by; $i++) {
-					array_unshift($col, array_pop($col));
-				}
-				for ($i = 0; $i < count($col); $i++) {
-					$screen[$i][$which] = $col[$i];
-				}
+				$col = rotateArray(array_column($screen, $which), $by);
+				// Merge the column back into the array.
+				for ($i = 0; $i < count($col); $i++) { $screen[$i][$which] = $col[$i]; }
 			}
 		}
 
