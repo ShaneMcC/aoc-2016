@@ -50,9 +50,7 @@
 
 	function decodeCharacter($character) {
 		global $encodedCharacters;
-		$char = '';
-		foreach ($character as $row) { $char .= implode('', $row); }
-		$char = (INT) bindec(str_replace(['#', ' '], [1, 0], $char));
+		$char = (INT)bindec(str_replace(['#', ' '], [1, 0], implode('', array_map('implode', $character))));
 		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
 	}
 
@@ -83,13 +81,14 @@
 	foreach ($screen as $row) { $part1 += substr_count(implode('', $row), '#'); }
 
 	echo 'Part 1: ', $part1, "\n";
-	echo 'Part 2: ';
+
 	if (!isTest()) {
 		$part2 = '';
 		$characters = getScreenCharacters($screen);
 		foreach ($characters as $c) { $part2 .= decodeCharacter($c); }
-		echo $part2;
+		echo 'Part 2: ', $part2, "\n";
 	}
-	echo "\n";
 
-	drawScreen($screen);
+	if (isDebug() || isTest()) {
+		drawScreen($screen);
+	}
