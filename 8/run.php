@@ -50,7 +50,7 @@
 
 	function decodeCharacter($character) {
 		global $encodedCharacters;
-		$char = (INT)bindec(str_replace(['#', ' '], [1, 0], implode('', array_map('implode', $character))));
+		$char = (int)bindec(str_replace(['#', ' '], [1, 0], implode('', array_map('implode', $character))));
 		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
 	}
 
