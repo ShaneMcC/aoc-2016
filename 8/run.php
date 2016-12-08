@@ -23,6 +23,39 @@
 		return $array;
 	}
 
+	function getScreenCharacters($screen) {
+		$characters = array();
+
+		foreach ($screen as $row) {
+			for ($i = 0; $i < count($screen[0]); $i += 5) {
+				$c = $i / 5;
+				$characters[$c][] = array_slice($row, $i, 5);
+			}
+		}
+
+		return $characters;
+	}
+
+	// From: https://www.reddit.com/r/adventofcode/comments/5h52ro/2016_day_8_solutions/daxv8cr/
+	// Added missing characters as 0xFF for now to make them stand out.
+	$encodedCharacters = [0x19297A52 => 'A', 0x392E4A5C => 'B', 0x1928424C => 'C',
+	                      0x39294A5C => 'D', 0x3D0E421E => 'E', 0x3D0E4210 => 'F',
+	                      0x19285A4E => 'G', 0x252F4A52 => 'H', 0x1C42108E => 'I',
+	                      0x0C210A4C => 'J', 0x254C5292 => 'K', 0x2108421E => 'L',
+	                      0xFF       => 'M', 0xFF       => 'N', 0x19294A4C => 'O',
+	                      0x39297210 => 'P', 0xFF       => 'Q', 0x39297292 => 'R',
+	                      0x1D08305C => 'S', 0x1C421084 => 'T', 0x25294A4C => 'U',
+	                      0xFF       => 'V', 0xFF       => 'W', 0xFF       => 'X',
+	                      0x23151084 => 'Y', 0x3C22221E => 'Z'];
+
+	function decodeCharacter($character) {
+		global $encodedCharacters;
+		$char = '';
+		foreach ($character as $row) { $char .= implode('', $row); }
+		$char = (INT) bindec(str_replace(['#', ' '], [1, 0], $char));
+		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
+	}
+
 	foreach ($input as $details) {
 		preg_match('#^(rect|rotate) (?:(row|column) (?:x|y)=([0-9]+) by ([0-9]+)|([0-9]+)x([0-9]+))#', trim($details), $m);
 		$instr = $m[1];
@@ -50,7 +83,13 @@
 	foreach ($screen as $row) { $part1 += substr_count(implode('', $row), '#'); }
 
 	echo 'Part 1: ', $part1, "\n";
-	echo 'Part 2: ', "\n";
-	drawScreen($screen);
+	echo 'Part 2: ';
+	if (!isTest()) {
+		$part2 = '';
+		$characters = getScreenCharacters($screen);
+		foreach ($characters as $c) { $part2 .= decodeCharacter($c); }
+		echo $part2;
+	}
+	echo "\n";
 
-	// TODO: Calculate letter from screen...
+	drawScreen($screen);
