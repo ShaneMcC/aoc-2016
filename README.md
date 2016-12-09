@@ -15,9 +15,7 @@
       ^^^^^^[_]^^^^^^  - ShaneMcC
 ```
 
-My (Hacky) PHP Solutions for [http://adventofcode.com](http://adventofcode.com)
-
-I may tidy up some of the more interesting ones.
+My PHP Solutions for [http://adventofcode.com](http://adventofcode.com) 2016
 
 ## Running
 
