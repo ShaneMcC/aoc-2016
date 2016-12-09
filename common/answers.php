@@ -34,7 +34,7 @@
 	$answers[2][8] = 'UPOJFLBCEZ';
 
 	// Day 9
-	$answers[1][9] = 0;
+	$answers[1][9] = 120765;
 	$answers[2][9] = 0;
 
 	// Day 10
