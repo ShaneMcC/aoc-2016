@@ -242,6 +242,7 @@
 
 	/**
 	 * Get an ascii Wreath as a string.
+	 * (Credit to 'jgs' for the original wreath ascii)
 	 *
 	 * @param $colour Colourise the wreath.
 	 * @return The wreath
@@ -268,19 +269,74 @@ $wreath     ;${berry}o$wreath;;          ;;;;
 $wreath     ;;${berry}o$wreath;          ;;${berry}o$wreath;
 $wreath     ';;;,  ${bow}_  _$wreath  ,;;;'
 $wreath      ';${berry}o$wreath;;$bow/_\/_\\$wreath;;${berry}o$wreath;'
-$name  jgs $wreath  ';;$bow\_\/_/$wreath;;'
+$name      $wreath  ';;$bow\_\/_/$wreath;;'
 $bow           '//\\\'
-$bow           //  \\\ $reset  Advent of Code 2016
-$bow          |/    \| $reset - ShaneMcC
+$bow           //  \\\ $reset     Advent of Code 2016
+$bow          |/    \| $reset    - ShaneMcC
 $reset
 
 WREATH;
 	}
 
+	/**
+	 * Get an ascii Tree as a string.
+	 * (Credit to 'jgs' for the original tree ascii, this was modified to be
+	 * taller)
+	 *
+	 * @param $colour Colourise the tree.
+	 * @return The tree
+	 */
+	function getTree($colour = true) {
+			$canColour = $colour && (function_exists('posix_isatty') && posix_isatty(STDOUT)) || getenv('ANSICON') !== FALSE;
+
+			if ($canColour) {
+				$name = "\033[0m";
+				$reset = "\033[0m";
+
+				$star = "\033[1;33m";
+				$tree = "\033[0;32m";
+				$snow = "\033[1;37m";
+				$box = "\033[1;30m";
+				$led1 = "\033[1;31m";
+				$led2 = "\033[1;34m";
+				$led3 = "\033[1;35m";
+				$led4 = "\033[1;36m";
+			} else {
+				$reset = $box = $star = $tree = $snow = $led1 = $led2 = $led3 = $led4 = $name = '';
+			}
+
+			return <<<TREE
+$star             '
+$star           - * -
+$tree            /.\
+$tree           /..$led1'$tree\
+$tree          /.$led2'$tree..$led4'$tree\
+$tree          /$led1'$tree.$led3'$tree..\
+$tree         /.$led2'$tree..$led1'$tree.$led4'$tree\
+$tree        /.$led3'$tree..$led2'$tree.$led4'$tree.$led3'$tree\
+$name       $tree /.$led4'$tree..$led1'$tree..$led1'$tree.\
+$snow "'""""$tree/$led1'$tree.$led2'$tree...$led1'$tree..$led3'$tree.\\$snow""'"'"
+$tree      /$led2'$tree..$led1'$tree$led4'$tree..$led2'$tree.$led1'$tree.$led2'$tree.\ $reset Advent of Code 2016
+$tree      ^^^^^^${box}[_]$tree^^^^^^ $reset - ShaneMcC
+$reset
+
+TREE;
+	}
+
+	/**
+	 * Output one of the ascii headers.
+	 *
+	 * @param $colour Colourise the header.
+	 * @return The header
+	 */
+	function getAsciiHeader($colour = true) {
+		echo rand(0,1) ? getWreath($colour) : getTree($colour);
+	}
+
 	try {
 		$__CLIOPTS = @getopt("hdtw", array('help', 'file:', 'debug', 'test'));
 		if (isset($__CLIOPTS['h']) || isset($__CLIOPTS['help'])) {
-			echo getWreath(), "\n";
+			echo getAsciiHeader(), "\n";
 			echo 'Usage: ', $_SERVER['argv'][0], ' [options]', "\n";
 			echo '', "\n";
 			echo 'Valid options', "\n";
@@ -293,4 +349,4 @@ WREATH;
 			die();
 		}
 	} catch (Exception $e) { /* Do nothing. */ }
-	if (!isset($__CLIOPTS['w'])) { echo getWreath(), "\n"; }
+	if (!isset($__CLIOPTS['w'])) { echo getAsciiHeader(), "\n"; }
