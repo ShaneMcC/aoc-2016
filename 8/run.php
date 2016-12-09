@@ -3,16 +3,21 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
+	$screenChars = [' ', '█'];
+
 	if (isTest()) {
-		$screen = array_fill(0, 3, array_fill(0, 7, ' '));
+		$screen = array_fill(0, 3, array_fill(0, 7, $screenChars[false]));
 	} else {
-		$screen = array_fill(0, 6, array_fill(0, 50, ' '));
+		$screen = array_fill(0, 6, array_fill(0, 50, $screenChars[false]));
 	}
 
-	function drawScreen($screen) {
-		echo '==========', "\n";
-		foreach ($screen as $row) { echo "\t", implode('', $row), "\n"; }
-		echo '==========', "\n";
+	function drawScreen($screen, $redraw = false) {
+		// Redraw over previous screen by moving the cursor up.
+		if ($redraw) { echo "\033[" . (count($screen) + 2) . "A"; }
+
+		echo '┍', str_repeat('━', count($screen[0])), '┑', "\n";
+		foreach ($screen as $row) { echo '│', implode('', $row), '│', "\n"; }
+		echo '┕', str_repeat('━', count($screen[0])), '┙', "\n";
 	}
 
 	function rotateArray($array, $count) {
@@ -50,11 +55,14 @@
 	                      0x23151084 => 'Y', 0x3C22221E => 'Z'];
 
 	function decodeCharacter($character) {
-		global $encodedCharacters;
-		$char = (int)bindec(str_replace(['#', ' '], [1, 0], implode('', array_map('implode', $character))));
+		global $encodedCharacters, $screenChars;
+		$char = (int)bindec(str_replace($screenChars, [0, 1], implode('', array_map('implode', $character))));
 
 		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
 	}
+
+
+	if (isDebug()) { drawScreen($screen, false); }
 
 	foreach ($input as $details) {
 		preg_match('#^(rect|rotate) (?:(row|column) (?:x|y)=([0-9]+) by ([0-9]+)|([0-9]+)x([0-9]+))#', trim($details), $m);
@@ -62,7 +70,7 @@
 
 		if ($instr == "rect") {
 			list($all, $instr, $_, $_, $_, $rX, $rY) = $m;
-			foreach (yieldXY(0, 0, $rX-1, $rY-1) as $col => $row) { $screen[$row][$col] = '#'; }
+			foreach (yieldXY(0, 0, $rX-1, $rY-1) as $col => $row) { $screen[$row][$col] = $screenChars[true]; }
 
 		} else if ($instr == "rotate") {
 			list($all, $instr, $type, $which, $by) = $m;
@@ -76,21 +84,23 @@
 			}
 		}
 
-		if (isDebug()) { drawScreen($screen); }
+		if (isDebug()) { drawScreen($screen, true); usleep(25000); }
 	}
 
+	if (isDebug()) { echo "\n"; }
+
 	$part1 = 0;
-	foreach ($screen as $row) { $part1 += substr_count(implode('', $row), '#'); }
+	foreach ($screen as $row) { $part1 += substr_count(implode('', $row), $screenChars[true]); }
 
 	echo 'Part 1: ', $part1, "\n";
 
+	$part2 = '';
 	if (!isTest()) {
-		$part2 = '';
 		$characters = getScreenCharacters($screen);
 		foreach ($characters as $c) { $part2 .= decodeCharacter($c); }
 		echo 'Part 2: ', $part2, "\n";
 	}
 
-	if (isDebug() || isTest()) {
-		drawScreen($screen);
+	if (!isDebug() && (isTest() || empty($part2) || strpos($part2, '?') !== FALSE)) {
+		drawScreen($screen, false);
 	}
