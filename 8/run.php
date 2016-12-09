@@ -55,6 +55,9 @@
 	// Characters for https://www.reddit.com/r/adventofcode/comments/5h9sfd/2016_day_8_tampering_detected/
 	$encodedCharacters += [0x252D5A52 => 'N', 0x3E421084 => 'T', 0x2318A944 => 'V', 0x00000000 => ' '];
 
+	// Characters for https://www.reddit.com/r/adventofcode/comments/5h571u/2016_day_8_generate_an_input/day4ctx/
+	$encodedCharacters += [0x239AD671 => 'N'];
+
 	function decodeCharacter($character) {
 		global $encodedCharacters, $screenChars;
 
