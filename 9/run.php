@@ -9,14 +9,12 @@
 			if ($line{$i} == '(') {
 				$cur = $i;
 				$i = strpos($line, ')', $i);
-				$bracketsData = substr($line, $cur, $i - $cur);
 
-				preg_match('#([0-9]+)x([0-9]+)#', $bracketsData, $m);
+				preg_match('#([0-9]+)x([0-9]+)#', substr($line, $cur, $i - $cur), $m);
 				list($all, $chars, $times) = $m;
 
 				$next = substr($line, $i + 1, $chars);
-				$compressedSize = ($version == 1) ? strlen($next) : decompress($next, $version);
-				$count += $compressedSize * $times;
+				$count += (($version == 1) ? strlen($next) : decompress($next, $version)) * $times;
 				$i += $chars;
 			} else {
 				$count++;
