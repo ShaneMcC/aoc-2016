@@ -38,19 +38,21 @@
 
 	// From: https://www.reddit.com/r/adventofcode/comments/5h52ro/2016_day_8_solutions/daxv8cr/
 	// Added missing characters as 0xFF for now to make them stand out.
+	// Added N and V from https://www.reddit.com/r/adventofcode/comments/5h9sfd/2016_day_8_tampering_detected/
 	$encodedCharacters = [0x19297A52 => 'A', 0x392E4A5C => 'B', 0x1928424C => 'C',
 	                      0x39294A5C => 'D', 0x3D0E421E => 'E', 0x3D0E4210 => 'F',
 	                      0x19285A4E => 'G', 0x252F4A52 => 'H', 0x1C42108E => 'I',
 	                      0x0C210A4C => 'J', 0x254C5292 => 'K', 0x2108421E => 'L',
-	                      0xFF       => 'M', 0xFF       => 'N', 0x19294A4C => 'O',
+	                      0xFF       => 'M', 0x252D5A52 => 'N', 0x19294A4C => 'O',
 	                      0x39297210 => 'P', 0xFF       => 'Q', 0x39297292 => 'R',
 	                      0x1D08305C => 'S', 0x1C421084 => 'T', 0x25294A4C => 'U',
-	                      0xFF       => 'V', 0xFF       => 'W', 0xFF       => 'X',
+	                      0x2318A944 => 'V', 0xFF       => 'W', 0xFF       => 'X',
 	                      0x23151084 => 'Y', 0x3C22221E => 'Z'];
 
 	function decodeCharacter($character) {
 		global $encodedCharacters;
 		$char = (int)bindec(str_replace(['#', ' '], [1, 0], implode('', array_map('implode', $character))));
+
 		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
 	}
 
