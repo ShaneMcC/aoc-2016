@@ -1,15 +1,14 @@
 #!/usr/bin/php
 <?php
+	$__CLI['long'] = ['buggy', 'sleep:', 'width:', 'height:'];
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	$input = getInputLines();
 
+	$input = getInputLines();
 	$screenChars = [' ', '█'];
 
-	if (isTest()) {
-		$screen = array_fill(0, 3, array_fill(0, 7, $screenChars[false]));
-	} else {
-		$screen = array_fill(0, 6, array_fill(0, 50, $screenChars[false]));
-	}
+	$screenWidth = isset($__CLIOPTS['width']) ? $__CLIOPTS['width'] : (isTest() ? 7 : 50);
+	$screenHeight = isset($__CLIOPTS['height']) ? $__CLIOPTS['height'] : (isTest() ? 3 : 6);
+	$screen = array_fill(0, $screenHeight, array_fill(0, $screenWidth, $screenChars[false]));
 
 	function drawScreen($screen, $redraw = false) {
 		// Redraw over previous screen by moving the cursor up.
@@ -43,24 +42,25 @@
 
 	// From: https://www.reddit.com/r/adventofcode/comments/5h52ro/2016_day_8_solutions/daxv8cr/
 	// Added missing characters as 0xFF for now to make them stand out.
-	// Added N and V from https://www.reddit.com/r/adventofcode/comments/5h9sfd/2016_day_8_tampering_detected/
 	$encodedCharacters = [0x19297A52 => 'A', 0x392E4A5C => 'B', 0x1928424C => 'C',
 	                      0x39294A5C => 'D', 0x3D0E421E => 'E', 0x3D0E4210 => 'F',
 	                      0x19285A4E => 'G', 0x252F4A52 => 'H', 0x1C42108E => 'I',
 	                      0x0C210A4C => 'J', 0x254C5292 => 'K', 0x2108421E => 'L',
-	                      0xFF       => 'M', 0x252D5A52 => 'N', 0x19294A4C => 'O',
+	                      0xFF       => 'M', 0xFF       => 'N', 0x19294A4C => 'O',
 	                      0x39297210 => 'P', 0xFF       => 'Q', 0x39297292 => 'R',
 	                      0x1D08305C => 'S', 0x1C421084 => 'T', 0x25294A4C => 'U',
-	                      0x2318A944 => 'V', 0xFF       => 'W', 0xFF       => 'X',
+	                      0xFF       => 'V', 0xFF       => 'W', 0xFF       => 'X',
 	                      0x23151084 => 'Y', 0x3C22221E => 'Z'];
+
+	// Characters for https://www.reddit.com/r/adventofcode/comments/5h9sfd/2016_day_8_tampering_detected/
+	$encodedCharacters += [0x252D5A52 => 'N', 0x3E421084 => 'T', 0x2318A944 => 'V', 0x00000000 => ' '];
 
 	function decodeCharacter($character) {
 		global $encodedCharacters, $screenChars;
-		$char = (int)bindec(str_replace($screenChars, [0, 1], implode('', array_map('implode', $character))));
 
+		$char = (int)bindec(str_replace($screenChars, [0, 1], implode('', array_map('implode', $character))));
 		return isset($encodedCharacters[$char]) ? $encodedCharacters[$char] : '?';
 	}
-
 
 	if (isDebug()) { drawScreen($screen, false); }
 
@@ -70,21 +70,26 @@
 
 		if ($instr == "rect") {
 			list($all, $instr, $_, $_, $_, $rX, $rY) = $m;
-			foreach (yieldXY(0, 0, $rX-1, $rY-1) as $col => $row) { $screen[$row][$col] = $screenChars[true]; }
+
+			foreach (yieldXY(0, 0, $rX-1, $rY-1) as $col => $row) {
+				// Tampering detected! It's ok, I got it...
+				if (isset($__CLIOPTS['buggy'])) { $row ^= $col ^= $row ^= $col; }
+				if (isset($screen[$row][$col])) { $screen[$row][$col] = $screenChars[true]; }
+			}
 
 		} else if ($instr == "rotate") {
 			list($all, $instr, $type, $which, $by) = $m;
 
-			if ($type == "row") {
+			if ($type == "row" && isset($screen[$which])) {
 				$screen[$which] = rotateArray($screen[$which], $by);
-			} else if ($type == "column") {
+			} else if ($type == "column" && isset($screen[0][$which])) {
 				$col = rotateArray(array_column($screen, $which), $by);
 				// Merge the column back into the array.
 				for ($i = 0; $i < count($col); $i++) { $screen[$i][$which] = $col[$i]; }
 			}
 		}
 
-		if (isDebug()) { drawScreen($screen, true); usleep(25000); }
+		if (isDebug()) { drawScreen($screen, true); usleep(isset($__CLIOPTS['sleep']) ? $__CLIOPTS['sleep'] : 25000); }
 	}
 
 	if (isDebug()) { echo "\n"; }
