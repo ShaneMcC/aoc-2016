@@ -1,34 +1,10 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	$input = getInputLines();
+	$input = getInputLine();
 
-
-	function decompressV1($line) {
+	function decompress($line, $version = 1, $sizeOnly = true) {
 		$newLine = '';
-		$brackets = FALSE;
-		$bracketsData = '';
-		for ($i = 0; $i < strlen($line); $i++) {
-			if ($line{$i} == '(') {
-				$bracketsData = '';
-				$brackets = TRUE;
-			} else if ($line{$i} == ')') {
-				$brackets = FALSE;
-				preg_match('#([0-9]+)x([0-9]+)#', $bracketsData, $m);
-				list($all, $chars, $times) = $m;
-				$newLine .= str_repeat(substr($line, $i + 1, $chars), $times);
-				$i += $chars;
-			} else if ($brackets) {
-				$bracketsData .= $line{$i};
-			} else {
-				$newLine .= $line{$i};
-			}
-		}
-
-		return $newLine;
-	}
-
-	function decompressV2Size($line) {
 		$count = 0;
 		$brackets = FALSE;
 		$bracketsData = '';
@@ -40,21 +16,23 @@
 				$brackets = FALSE;
 				preg_match('#([0-9]+)x([0-9]+)#', $bracketsData, $m);
 				list($all, $chars, $times) = $m;
-				$count += (decompressV2Size(substr($line, $i + 1, $chars)) * $times);
+				if ($sizeOnly) {
+					$compressedSize = ($version == 1) ? strlen(substr($line, $i + 1, $chars)) : decompress(substr($line, $i + 1, $chars), $version, true);
+					$count += $compressedSize * $times;
+				} else {
+					$bit = ($version == 1) ? substr($line, $i + 1, $chars) : decompress(substr($line, $i + 1, $chars), $version, false);
+					$newLine .= str_repeat($bit, $times);
+				}
 				$i += $chars;
 			} else if ($brackets) {
 				$bracketsData .= $line{$i};
 			} else {
-				$count++;
+				if ($sizeOnly) { $count++; } else { $newLine .= $line{$i}; }
 			}
 		}
 
-		return $count;
+		return ($sizeOnly) ? $count : $newLine;
 	}
 
-	foreach ($input as $line) {
-		// $newLine = decompressV2($line);
-		// echo $line, ' => ', trim($newLine), ' {', strlen($newLine), '}', "\n";
-		//
-		echo decompressV2Size($line);
-	}
+	echo 'Part 1: ', decompress($input, 1, !isDebug()), "\n";
+	echo 'Part 2: ', decompress($input, 2, !isDebug()), "\n";
