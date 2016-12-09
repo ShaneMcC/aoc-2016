@@ -6,14 +6,12 @@
 	function decompress($line, $version = 1, $sizeOnly = true) {
 		$newLine = '';
 		$count = 0;
-		$brackets = FALSE;
-		$bracketsData = '';
 		for ($i = 0; $i < strlen($line); $i++) {
 			if ($line{$i} == '(') {
-				$bracketsData = '';
-				$brackets = TRUE;
-			} else if ($line{$i} == ')') {
-				$brackets = FALSE;
+				$cur = $i;
+				$i = strpos($line, ')', $i);
+				$bracketsData = substr($line, $cur, $i - $cur);
+
 				preg_match('#([0-9]+)x([0-9]+)#', $bracketsData, $m);
 				list($all, $chars, $times) = $m;
 				if ($sizeOnly) {
@@ -24,8 +22,6 @@
 					$newLine .= str_repeat($bit, $times);
 				}
 				$i += $chars;
-			} else if ($brackets) {
-				$bracketsData .= $line{$i};
 			} else {
 				if ($sizeOnly) { $count++; } else { $newLine .= $line{$i}; }
 			}
@@ -34,5 +30,11 @@
 		return ($sizeOnly) ? $count : $newLine;
 	}
 
-	echo 'Part 1: ', decompress($input, 1, !isDebug()), "\n";
-	echo 'Part 2: ', decompress($input, 2, !isDebug()), "\n";
+	if (isDebug()) {
+		echo 'Input: ', $input, "\n";
+		echo 'Part 1: {', decompress($input, 1, true), '} => ', decompress($input, 1, false), "\n";
+		echo 'Part 2: {', decompress($input, 2, true), '} => ', decompress($input, 2, false), "\n";
+	} else {
+		echo 'Part 1: ', decompress($input, 1, true), "\n";
+		echo 'Part 2: ', decompress($input, 2, true), "\n";
+	}
