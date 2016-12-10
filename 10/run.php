@@ -62,3 +62,11 @@
 
 	echo 'Part 1: ', $part1, "\n";
 	echo 'Part 2: ', ($outputs[0][0] * $outputs[1][0] * $outputs[2][0]), "\n";
+
+	if (isDebug()) {
+		echo "\n";
+		ksort($bots);
+		ksort($outputs);
+		foreach ($bots as $botID => $bot) { echo sprintf('   Bot %3d: [%s]', $botID, implode(', ', $bot['values'])), "\n"; }
+		foreach ($outputs as $id => $values) { echo sprintf('Output %3d: [%s]', $id, implode(', ', $values)), "\n"; }
+	}
