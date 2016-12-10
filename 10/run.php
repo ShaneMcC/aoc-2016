@@ -4,69 +4,68 @@
 	$input = getInputLines();
 
 	$inputs = [];
-	$bots = [];
 	$outputs = [];
 
-	$valueRegex = '#value ([0-9]+) goes to bot ([0-9]+)#SADi';
-	$botRegex = '#bot ([0-9]+) gives low to (output|bot) ([0-9]+) and high to (output|bot) ([0-9]+)#SADi';
+	$part1 = -1;
+	$part2 = -1;
+	$part1Test = isTest() ? [2, 5] : [17, 61];
+
+	$valueRegex = '#value ([0-9]+) goes to (bot [0-9]+)#SADi';
+	$botRegex = '#(bot [0-9]+) gives low to ((?:output|bot) [0-9]+) and high to ((?:output|bot) [0-9]+)#SADi';
 
 	// Parse out the instructions.
 	foreach ($input as $instruction) {
 		if (preg_match($valueRegex, $instruction, $m)) {
-			list($all, $value, $bot) = $m;
-			$inputs[$value] = $bot;
+			list($all, $value, $target) = $m;
+			$inputs[$value] = $target;
 
 		} elseif (preg_match($botRegex, $instruction, $m)) {
-			list($all, $bot, $lowDestType, $lowDest, $highDestType, $highDest) = $m;
+			list($all, $output, $lowDest, $highDest) = $m;
 
-			$bots[$bot] = ['lowDestType' => $lowDestType, 'lowDest' => $lowDest, 'highDestType' => $highDestType, 'highDest' => $highDest, 'values' => []];
+			$outputs[$output] = ['lowDest' => $lowDest, 'highDest' => $highDest, 'values' => []];
 		}
 	}
 
 	// Function to give values to destinations
-	function giveValue($type, $id, $value) {
-		global $bots, $outputs;
-		if ($type == 'output') {
-			if (!isset($outputs[$id])) { $outputs[$id] = []; }
-			$outputs[$id][] = $value;
-		} else if ($type == 'bot') {
-			$bots[$id]['values'][] = $value;
-		}
-		debugOut("\t", sprintf('%6s %3d was given [%2d]', $type, $id, $value), "\n");
+	function giveValue($target, $value) {
+		global $outputs;
+		debugOut("\t", sprintf('%s was given [%2d]', $target, $value), "\n");
+		if (!isset($outputs[$target])) { $outputs[$target] = ['values' => '']; }
+		$outputs[$target]['values'][] = $value;
+		processOutput($target);
 	}
 
-	// Hand out initial values.
-	foreach ($inputs as $val => $bot) { giveValue('bot', $bot, $val); }
+	// If a bot ends up with 2 values, process it.
+	function processOutput($id) {
+		global $outputs, $part1, $part1Test;
+		$out = $outputs[$id];
 
-	$part1 = -1;
-	$part1Test = isTest() ? [2, 5] : [17, 61];
+		if (!isset($out['lowDest']) || !isset($out['highDest'])) { return; }
+		if (count($out['values']) != 2) { return; }
 
-	// Find any bots with 2 values and action them.
-	// Keep going until no more bots have 2 values.
-	while (true) {
-		$twoValues = array_filter($bots, function($bot) { return count($bot['values']) == 2; });
-		if (count($twoValues) == 0) { break; }
+		sort($out['values']);
+		list($low, $high) = $out['values'];
 
-		foreach ($twoValues as $botID => $bot) {
-			sort($bot['values']);
-			list($low, $high) = $bot['values'];
+		if ($low == $part1Test[0] && $high == $part1Test[1]) { $part1 = $id; }
 
-			if ($low == $part1Test[0] && $high == $part1Test[1]) { $part1 = $botID; }
-
-			debugOut(sprintf('Bot %3d gives low [%2d] to %6s %3d, high [%2d] to %6s %3d', $botID, $low, $bot['lowDestType'], $bot['lowDest'], $high, $bot['highDestType'], $bot['highDest']), "\n");
-			$bots[$botID]['values'] = [];
-			giveValue($bot['lowDestType'], $bot['lowDest'], $low);
-			giveValue($bot['highDestType'], $bot['highDest'], $high);
-		}
+		debugOut(sprintf('%s gives low [%2d] to %s, high [%2d] to %s', $id, $low, $out['lowDest'], $high, $out['highDest']), "\n");
+		$outputs[$id]['values'] = [];
+		giveValue($out['lowDest'], $low);
+		giveValue($out['highDest'], $high);
 	}
+
+	// Hand out values, this will trigger all the bots to do things as needed.
+	foreach ($inputs as $val => $out) { giveValue($out, $val); }
+
+	$part2 = [];
+	for ($i = 0; $i <= 2; $i++) { $part2[] = $outputs['output '.$i]['values'][0] ?: ''; }
+	$part2 = array_product(array_filter($part2));
 
 	echo 'Part 1: ', $part1, "\n";
-	echo 'Part 2: ', ($outputs[0][0] * $outputs[1][0] * $outputs[2][0]), "\n";
+	echo 'Part 2: ', $part2, "\n";
 
 	if (isDebug()) {
 		echo "\n";
-		ksort($bots);
-		ksort($outputs);
-		foreach ($bots as $botID => $bot) { echo sprintf('   Bot %3d: [%s]', $botID, implode(', ', $bot['values'])), "\n"; }
-		foreach ($outputs as $id => $values) { echo sprintf('Output %3d: [%s]', $id, implode(', ', $values)), "\n"; }
+		ksort($outputs, SORT_NATURAL);
+		foreach ($outputs as $id => $data) { echo sprintf('%s: [%s]', $id, implode(', ', $data['values'])), "\n"; }
 	}
