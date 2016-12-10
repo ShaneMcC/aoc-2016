@@ -6,10 +6,6 @@
 	$inputs = [];
 	$outputs = [];
 
-	$part1 = -1;
-	$part2 = -1;
-	$part1Test = isTest() ? [2, 5] : [17, 61];
-
 	$valueRegex = '#value ([0-9]+) goes to (bot [0-9]+)#SADi';
 	$botRegex = '#(bot [0-9]+) gives low to ((?:output|bot) [0-9]+) and high to ((?:output|bot) [0-9]+)#SADi';
 
@@ -18,11 +14,9 @@
 		if (preg_match($valueRegex, $instruction, $m)) {
 			list($all, $value, $target) = $m;
 			$inputs[$value] = $target;
-
 		} elseif (preg_match($botRegex, $instruction, $m)) {
 			list($all, $output, $lowDest, $highDest) = $m;
-
-			$outputs[$output] = ['lowDest' => $lowDest, 'highDest' => $highDest, 'values' => []];
+			$outputs[$output] = ['lowDest' => $lowDest, 'highDest' => $highDest, 'values' => [], 'handled' => []];
 		}
 	}
 
@@ -37,25 +31,28 @@
 
 	// If a bot ends up with 2 values, process it.
 	function processOutput($id) {
-		global $outputs, $part1, $part1Test;
-		$out = $outputs[$id];
+		global $outputs;
+		$out = &$outputs[$id];
 
 		if (!isset($out['lowDest']) || !isset($out['highDest'])) { return; }
 		if (count($out['values']) != 2) { return; }
 
 		sort($out['values']);
+		$out['handled'][] = implode(',', $out['values']);
 		list($low, $high) = $out['values'];
 
-		if ($low == $part1Test[0] && $high == $part1Test[1]) { $part1 = $id; }
-
 		debugOut(sprintf('%s gives low [%2d] to %s, high [%2d] to %s', $id, $low, $out['lowDest'], $high, $out['highDest']), "\n");
-		$outputs[$id]['values'] = [];
+		$out['values'] = [];
 		giveValue($out['lowDest'], $low);
 		giveValue($out['highDest'], $high);
 	}
 
 	// Hand out values, this will trigger all the bots to do things as needed.
 	foreach ($inputs as $val => $out) { giveValue($out, $val); }
+
+	// Which bot handled the values we care about?
+	$part1Test = isTest() ? '2,5' : '17,61';
+	$part1 = array_reduce(array_keys($outputs), function ($c, $i) use ($part1Test, $outputs) { return isset($outputs[$i]['handled']) && in_array($part1Test, $outputs[$i]['handled']) ? $i : $c; });
 
 	$part2 = [];
 	for ($i = 0; $i <= 2; $i++) { $part2[] = $outputs['output '.$i]['values'][0] ?: ''; }
