@@ -61,3 +61,4 @@
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', ($outputs[0][0] * $outputs[1][0] * $outputs[2][0]), "\n";
