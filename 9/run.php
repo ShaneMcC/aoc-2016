@@ -4,9 +4,6 @@
 	$input = getInputLine();
 
 	function decompress($line, $version = 1) {
-		global $__CLIOPTS;
-
-		$nextMore = $more;
 		$count = 0;
 		for ($i = 0; $i < strlen($line); $i++) {
 			if ($line{$i} == '(') {
