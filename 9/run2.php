@@ -120,8 +120,7 @@
 
 				if ($i >= $this->truncateAt) {
 					if (!isDebug()) { $this->showOutput($i); }
-					$this->truncate($i);
-					$i = 0;
+					$i -= $this->truncate($i);
 				}
 
 				if (isset($__CLIOPTS['limit']) && strlen($this->output) > $__CLIOPTS['limit']) {
@@ -175,11 +174,14 @@
 		 * truncate earlier parts of the file as we pass them, do this here.
 		 *
 		 * @param $amount How many characters to truncate?
+		 * @return Characters truncated away.
 		 */
 		function truncate($amount) {
-			if (!$this->isSizeOnly()) { return; }
+			if (!$this->isSizeOnly()) { return 0; }
+			$amount = min(strlen($this->output), $amount);
 			$this->output = substr($this->output, $amount);
 			$this->base += $amount;
+			return $amount;
 		}
 
 		/**
@@ -217,7 +219,7 @@
 
 	if (!isset($__CLIOPTS['1'])) {
 		try {
-			$part2 = new Decompressor($input, 2, false);
+			$part2 = new Decompressor($input, 2, true);
 			$part2->decompress();
 			echo 'Part 2: ', $part2->getSize(), "\n";
 		} catch (DecompressorException $d) {
