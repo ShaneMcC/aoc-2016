@@ -341,13 +341,15 @@ TREE;
 			echo getAsciiHeader(), "\n";
 			echo 'Usage: ', $_SERVER['argv'][0], ' [options]', "\n";
 			echo '', "\n";
-			echo 'Valid options', "\n";
+			echo 'Valid options:', "\n";
 			echo '  -h, --help               Show this help output', "\n";
 			echo '  -t, --test               Enable test mode (default to reading input from test.txt not input.txt)', "\n";
 			echo '  -d, --debug              Enable debug mode', "\n";
 			echo '      --file <file>        Read input from <file>', "\n";
 			if (isset($__CLI['extrahelp']) && is_array($__CLI['extrahelp'])) {
-				foreach ($__CLI['extrahelp'] as $line) { echo '  ', $line, "\n"; }
+				echo '', "\n";
+				echo 'Additional script-specific options:', "\n";
+				foreach ($__CLI['extrahelp'] as $line) { echo $line, "\n"; }
 			}
 			echo '', "\n";
 			echo 'Input will be read from STDIN in preference to either <file> or the default files.', "\n";

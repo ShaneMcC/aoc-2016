@@ -1,7 +1,14 @@
 #!/usr/bin/php
 <?php
 	$__CLI['short'] = ['1', '2'];
-	$__CLI['long'] = ['slow', 'complete', 'limit:'];
+	$__CLI['long'] = ['slow', 'complete', 'completeout', 'limit:'];
+	$__CLI['extrahelp'] = [];
+	$__CLI['extrahelp'][] = '  -1                       Only solve part 1';
+	$__CLI['extrahelp'][] = '  -2                       Only solve part 2';
+	$__CLI['extrahelp'][] = '      --slow               Sleep between each debug line for human consumption.';
+	$__CLI['extrahelp'][] = '      --complete           Show every step rather than jumping ahead to each (';
+	$__CLI['extrahelp'][] = '      --completeout        Show entire output in debug rather than only the surrounding 100 characters from the current position';
+	$__CLI['extrahelp'][] = '      --limit <#>          Abort if input grows longer than <#>';
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLine();
 
@@ -85,20 +92,26 @@
 		function showOutput($position) {
 			global $__CLIOPTS;
 
-			$displayTruncate = 100;
+			if (isset($__CLIOPTS['completeout'])) {
+				$displayStart = 0;
+				$displayPos = $position;
+				$displayEnd = strlen($this->output);
+			} else {
+				$displayTruncate = 100;
 
-			$displayStart = max(0, $position - $displayTruncate/2);
-			$displayPos = $position;
-			$displayEnd = min(strlen($this->output), $displayStart + $displayTruncate);
+				$displayStart = max(0, $position - $displayTruncate/2);
+				$displayPos = $position;
+				$displayEnd = min(strlen($this->output), $displayStart + $displayTruncate);
+			}
 
-			if ($this->base > 0 || $displayStart > 0) { echo ' ...'; }
+				if ($this->base > 0 || $displayStart > 0) { echo ' ...'; }
 
-			echo substr($this->output, $displayStart, ($displayEnd - $displayStart));
+				echo substr($this->output, $displayStart, ($displayEnd - $displayStart));
 
-			if (strlen($this->output) > $displayEnd) { echo '...'; }
-			echo "\n";
+				if (strlen($this->output) > $displayEnd) { echo '...'; }
+				echo "\n";
 
-			if ($this->base > 0 || $displayStart > 0) { echo '    '; }
+				if ($this->base > 0 || $displayStart > 0) { echo '    '; }
 			echo str_repeat(' ', $displayPos - $displayStart), '^ (', ($position + $this->base), ' / ', (strlen($this->output) + $this->base), ')', "\n"; /* */
 
 			if (isset($__CLIOPTS['slow'])) { usleep(100000); }
