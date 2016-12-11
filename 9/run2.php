@@ -153,6 +153,18 @@
 					$markerRange = $i + ($chars * $times);
 					$markerLength = $chars + ($next - $i);
 
+					// <TODO: Optimisation>
+					//
+					//       If we somehow remember where we are now, and then
+					//       where we're going to end up after decompressing
+					//       $nextText - once we get there, work out how many
+					//       characters are eventually between where we started
+					//       and where we ended up and then we can just replace
+					//       the next $times-1 instances of this with the last 1
+					//       and jump ahead.
+					//
+					// </TODO: Optimisation>
+
 					// Replace the text in our version of the input String.
 					$this->output = substr_replace($this->output, str_repeat($nextText, $times), $i, $markerLength);
 
