@@ -46,7 +46,7 @@
 	$answers[2][11] = 0;
 
 	// Day 12
-	$answers[1][12] = 0;
+	$answers[1][12] = 318117;
 	$answers[2][12] = 0;
 
 	// Day 13
