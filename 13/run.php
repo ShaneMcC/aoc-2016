@@ -69,9 +69,11 @@
 	}
 
 
-	function solveMaze($beginState) {
+	function solveMaze($beginState, $maxSteps = -1) {
 		$visted = [$beginState['current']];
 		$states = [$beginState];
+
+		$finalState = FALSE;
 
 		while (count($states) > 0) {
 			$state = array_shift($states);
@@ -79,7 +81,8 @@
 			if (isFinished($state)) {
 				debugOut('Finished With: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
 				if (isDebug()) { drawState($state); }
-				return $state;
+				$finalState = $state;
+				break;
 			} else {
 				debugOut('Testing: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
 				if (isDebug()) { drawState($state); }
@@ -88,7 +91,7 @@
 			$options = getOptions($state);
 			debugOut("\t", 'Found Options: ', count($options), "\n");
 			foreach ($options as $opt) {
-				if (!in_array($opt['current'], $visted)) {
+				if (!in_array($opt['current'], $visted) && ($maxSteps <= 0 || $opt['steps'] <= $maxSteps)) {
 					$visted[] = $opt['current'];
 					$states[] = $opt;
 
@@ -97,34 +100,11 @@
 			}
 		}
 
-		die('Unable to continue, no answer found.' . "\n");
+		return [$finalState, $visted];
 	}
 
-	function getAllXYs($beginState, $maxSteps) {
-		$visted = [];
-
-		$states = [$beginState];
-		while (count($states) > 0) {
-			$state = array_shift($states);
-
-			if ($state['steps'] > $maxSteps) {
-				break;
-			}
-
-			$options = getOptions($state);
-			foreach ($options as $opt) {
-				if (!in_array($opt['current'], $visted)) {
-					$visted[] = $opt['current'];
-					$states[] = $opt;
-				}
-			}
-		}
-
-		return $visted;
-	}
-
-	$part1 = solveMaze($initialState);
-	$part2 = getAllXYs($initialState, 50);
+	list($part1, $_) = solveMaze($initialState);
+	list($_, $part2) = solveMaze($initialState, 50);
 
 	echo 'Part 1: ', $part1['steps'], "\n";
 	echo 'Part 2: ', count($part2), "\n";
