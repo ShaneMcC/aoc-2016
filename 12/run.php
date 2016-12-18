@@ -130,16 +130,9 @@
 				if ($vm->isReg($x)) { $x = $vm->getReg($x); }
 				if ($x === 0) { return; }
 
-				preg_match('#([+-]?)([0-9]+)#SADi', $y, $bits);
-				$curloc = $vm->getLocation();
+				$newloc = $vm->getLocation() + (int)$y;
 
-				if ($bits[1] == '+' || $bits[1] == '') {
-					$curloc += $bits[2];
-				} else if ($bits[1] == '-') {
-					$curloc -= $bits[2];
-				}
-
-				$this->jump($curloc - 1); // (-1 because step() always does +1)
+				$this->jump($newloc - 1); // (-1 because step() always does +1)
 			};
 		}
 
