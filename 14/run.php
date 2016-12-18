@@ -3,18 +3,24 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLine();
 
-	function getHash($str) {
+	function getHash($str, $stretchedCount = 0) {
 		global $__HASHES;
-		if (!isset($__HASHES[$str])) { $__HASHES[$str] = md5($str); }
-		return $__HASHES[$str];
+
+		if (!isset($__HASHES[$stretchedCount . '_' . $str])) {
+			$hash = md5($str);
+			for ($i = 0; $i < $stretchedCount; $i++) { $hash = md5($hash); }
+			$__HASHES[$stretchedCount . '_' . $str] = $hash;
+		}
+
+		return $__HASHES[$stretchedCount . '_' . $str];
 	}
 
-	function validHash($input, $position) {
-		$hash = getHash($input . $position);
+	function validHash($input, $position, $stretchedCount = 0) {
+		$hash = getHash($input . $position, $stretchedCount);
 		if (preg_match('#(.)\1\1#', $hash, $m)) {
 			$needle = str_repeat($m[1], 5);
 			for ($i = $position + 1; $i < $position + 1000; $i++) {
-				if (strpos(getHash($input . $i), $needle) !== FALSE) {
+				if (strpos(getHash($input . $i, $stretchedCount), $needle) !== FALSE) {
 					return TRUE;
 				}
 			}
@@ -22,16 +28,24 @@
 		return FALSE;
 	}
 
-	$validHashes = array();
-	$i = 0;
-	while (true) {
-		if (validHash($input, $i)) {
-			$hash = getHash($input . $i);
-			$validHashes[] = $hash;
-			debugOut('Found valid hash ', count($validHashes), ' at ', $i, ': ', $hash, "\n");
+	function getLastHashIndex($input, $count = '64', $stretchedCount = 0) {
+		$validHashes = array();
+		$i = 0;
+		while (true) {
+			if (validHash($input, $i, $stretchedCount)) {
+				$hash = getHash($input . $i, $stretchedCount);
+				$validHashes[] = $hash;
+				debugOut('Found valid hash ', count($validHashes), ' at ', $i, ': ', $hash, "\n");
+			}
+			if (count($validHashes) == $count) { break; }
+			$i++;
 		}
-		if (count($validHashes) == 64) { break; }
-		$i++;
+
+		return $i;
 	}
 
-	echo 'Part 1: ', $i, "\n";
+	$part1 = getLastHashIndex($input, 64);
+	echo 'Part 1: ', $part1, "\n";
+
+	$part2 = getLastHashIndex($input, 64, 2016);
+	echo 'Part 2: ', $part2, "\n";
