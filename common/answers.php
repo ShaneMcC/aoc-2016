@@ -66,7 +66,7 @@
 	$answers[2][16] = '01010001101011001';
 
 	// Day 17
-	$answers[1][17] = 0;
+	$answers[1][17] = 'DDRRULRDRD';
 	$answers[2][17] = 0;
 
 	// Day 18
