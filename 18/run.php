@@ -2,55 +2,32 @@
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLine();
-	$rows[] = str_split($input);
-
-	function drawRows($rows) {
-		echo '┍', str_repeat('━', count($rows[0])), '┑', "\n";
-		foreach ($rows as $row) { echo '│', implode('', $row), '│', "\n"; }
-		echo '┕', str_repeat('━', count($rows[0])), '┙', "\n";
-	}
-
-	function addRow($rows) {
-		$lastRow = $rows[count($rows) - 1];
-		$rows[] = nextRow($lastRow);
-		return $rows;
-	}
+	$lastRow = $input;
 
 	function nextRow($lastRow) {
-		$newRow = [];
-		for ($i = 0; $i < count($lastRow); $i++) {
-			$left = isset($lastRow[$i - 1]) ? $lastRow[$i - 1] : '.';
-			$center = $lastRow[$i];
-			$right = isset($lastRow[$i + 1]) ? $lastRow[$i + 1] : '.';
-
-			$trap = ($left == '^' && $center == '^' && $right == '.') ||
-			        ($left == '.' && $center == '^' && $right == '^') ||
-			        ($left == '^' && $center == '.' && $right == '.') ||
-			        ($left == '.' && $center == '.' && $right == '^');
-
-			$newRow[$i] = $trap ? '^' : '.';
+		$newRow = '';
+		for ($i = 0; $i < strlen($lastRow); $i++) {
+			$newRow .= (($i > 0 ? $lastRow{$i - 1} : '.') != ($i < strlen($lastRow) - 1 ? $lastRow{$i + 1} : '.')) ? '^' : '.';
 		}
-
 		return $newRow;
 	}
 
-	for ($i = 1; $i < (isTest() ? 10 : 40); $i++) { $rows = addRow($rows); }
-	if (isDebug()) { drawRows($rows); echo "\n"; }
+	function countSafe($input, $rows) {
+		$row = $input;
+		$count = substr_count($row, '.');
+		for ($i = 1; $i < $rows; $i++) {
+			$row = nextRow($row);
+			$count += substr_count($row, '.');
+			debugOut("\r", $i, ' => ', $count, "\033[0K");
+		}
+		debugOut("\r\033[0K\r");
+		return $count;
+	}
 
-	$part1 = 0;
-	foreach ($rows as $row) { $part1 += substr_count(implode('', $row), '.'); }
+	$part1 = countSafe($input, isTest() ? 10 : 40);
 	echo 'Part 1: ', $part1, "\n";
 
 	if (!isTest()) {
-		$row = str_split($input);
-		$part2 = substr_count(implode('', $row), '.');
-
-		for ($i = 1; $i < 400000; $i++) {
-			$row = nextRow($row);
-			$part2 += substr_count(implode('', $row), '.');
-			debugOut("\r", 'Part 2: ', $i, ' => ', $part2, "\033[0K");
-		}
-		debugOut("\r\033[0K");
-
+		$part2 = countSafe($input, 400000);
 		echo 'Part 2: ', $part2, "\n";
 	}
