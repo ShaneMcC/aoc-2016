@@ -6,6 +6,8 @@
 	$start = [0, 0];
 	$end = [3, 3];
 
+	$initialState = array('current' => $start, 'target' => $end, 'previous' => '', 'steps' => 0);
+
 	// Excessive function to draw the current state.
 	function drawState($state) {
 		$roomMaxX = 4;
@@ -62,6 +64,9 @@
 
 
 		foreach ($maze as $row) { echo implode('', $row), "\n"; }
+		echo 'Steps: ', $state['steps'], "\n";
+		echo 'Path: ', $state['previous'], "\n";
+		echo "\n";
 	}
 
 	function getDirections($state) {
@@ -73,11 +78,10 @@
 		$passable = ['U' => ['passable' => (strpos('bcdef', $code[0]) !== FALSE && $pos[1] - 1 >= 0), 'pos' => [$pos[0], $pos[1] - 1]],
 		             'D' => ['passable' => (strpos('bcdef', $code[1]) !== FALSE && $pos[1] + 1 <= 3), 'pos' => [$pos[0], $pos[1] + 1]],
 		             'L' => ['passable' => (strpos('bcdef', $code[2]) !== FALSE && $pos[0] - 1 >= 0), 'pos' => [$pos[0] - 1, $pos[1]]],
-		             'R' => ['passable' => (strpos('bcdef', $code[3]) !== FALSE && $pos[1] + 1 <= 3), 'pos' => [$pos[0] + 1, $pos[1]]]];
+		             'R' => ['passable' => (strpos('bcdef', $code[3]) !== FALSE && $pos[0] + 1 <= 3), 'pos' => [$pos[0] + 1, $pos[1]]]];
 
 		return $passable;
 	}
-	$initialState = array('current' => $start, 'target' => $end, 'previous' => '', 'steps' => 0);
 
 	function isFinished($state) {
 		return ($state['current'] == $state['target']);
@@ -102,7 +106,7 @@
 		return $options;
 	}
 
-	function solveMaze($beginState) {
+	function solveMaze($beginState, $longest = false) {
 		$states = [$beginState];
 
 		$finalState = FALSE;
@@ -113,25 +117,28 @@
 			if (isFinished($state)) {
 				debugOut('Finished With: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
 				if (isDebug()) { drawState($state); }
-				$finalState = $state;
-				break;
-			} else {
-				debugOut('Testing: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
-				if (isDebug()) { drawState($state); }
+				if ($longest) {
+					if ($state['steps'] > $finalState['steps']) {
+						$finalState = $state;
+					}
+					continue;
+				} else {
+					$finalState = $state;
+					break;
+				}
 			}
 
 			$options = getOptions($state);
-			debugOut("\t", 'Found Options: ', count($options), "\n");
 			foreach ($options as $opt) {
 				$states[] = $opt;
-
-				debugOut("\t\t", 'New Option: ', implode(', ', $opt['current']), "\n");
 			}
 		}
 
 		return $finalState;
 	}
 
-	$part1 = solveMaze($initialState);
-
+	$part1 = solveMaze($initialState, false);
 	echo 'Part 1: ', $part1['previous'], "\n";
+
+	$part2 = solveMaze($initialState, true);
+	echo 'Part 2: ', strlen($part2['previous']), "\n";
