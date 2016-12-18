@@ -43,7 +43,7 @@
 
 	// Day 11
 	$answers[1][11] = 47;
-	$answers[2][11] = 0;
+	$answers[2][11] = 71;
 
 	// Day 12
 	$answers[1][12] = 318117;

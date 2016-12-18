@@ -3,22 +3,28 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	$floorNames = ['first' => 1, 'second' => 2, 'third' => 3, 'fourth' => 4];
-	$knownElements = ['polonium' => 'Po', 'thulium' => 'Tm', 'promethium' => 'Pm', 'ruthenium' => 'Ru', 'cobalt' => 'Co', 'hydrogen' => 'H', 'lithium' => 'Li'];
+	$floorNumbers = ['first' => 1, 'second' => 2, 'third' => 3, 'fourth' => 4];
+	$knownElements = ['polonium' => 'Po', 'thulium' => 'Tm', 'promethium' => 'Pm', 'ruthenium' => 'Ru', 'cobalt' => 'Co', 'hydrogen' => 'H', 'lithium' => 'Li', 'elerium' => 'El', 'dilithium' => 'Di'];
+	$initialState = ['floors' => [], 'elevator' => '1', 'count' => 0];
+
+	function addItem(&$state, $element, $type, $floor) {
+		global $knownElements;
+
+		$code = ($knownElements[$element] ?: $element) . ($type == ' generator' ? 'G' : 'M');
+		$state['floors'][$floor][] = $code;
+	}
 
 	foreach ($input as $details) {
 		preg_match('#^The ([^\s]+) floor contains (.*)#SADi', $details, $m);
 		list($all, $floor, $contents) = $m;
-		$floors[$floorNames[$floor]] = array();
+		$initialState['floors'][$floorNumbers[$floor]] = array();
 
 		if (preg_match_all('#([a-z]+)(-compatible microchip| generator)#', $contents, $m)) {
 			for ($i = 0; $i < count($m[0]); $i++) {
-				$code = ($knownElements[$m[1][$i]] ?: $m[1][$i]) . ($m[2][$i] == ' generator' ? 'G' : 'M');
-				$floors[$floorNames[$floor]][] = $code;
+				addItem($initialState, $m[1][$i], $m[2][$i], $floorNumbers[$floor]);
 			}
 		}
 	}
-	$initialState = ['floors' => $floors, 'elevator' => '1', 'count' => 0];
 
 	function getItemLocations($state) {
 		$allItems = [];
@@ -199,5 +205,17 @@
 		die('Unable to continue, no answer found.' . "\n");
 	}
 
-	$part1 = run($initialState);
+	$part1State = $initialState;
+	$part1 = run($part1State);
+
+	if (!isTest()) {
+		$part2State = $initialState;
+		addItem($part2State, 'elerium', ' generator', 1);
+		addItem($part2State, 'elerium', '-compatible microchip', 1);
+		addItem($part2State, 'dilithium', ' generator', 1);
+		addItem($part2State, 'dilithium', '-compatible microchip', 1);
+		$part2 = run($part2State);
+	}
+
 	echo 'Part 1: ', $part1['count'], "\n";
+	if (!isTest()) { echo 'Part 2: ', $part2['count'], "\n"; }
