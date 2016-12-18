@@ -7,7 +7,7 @@
 	foreach ($input as $details) {
 		preg_match('#Disc \#([0-9]+) has ([0-9]+) positions; at time=0, it is at position ([0-9]+).#SADi', $details, $m);
 		list($all, $disc, $count, $start) = $m;
-		$discs[$disc]  = ['count' => $count, 'start' => $start];
+		$discs[$disc] = ['count' => $count, 'start' => $start];
 	}
 
 	function canGetCapsule($discs, $startTime) {
@@ -22,5 +22,10 @@
 
 	$part1 = 0;
 	while (!canGetCapsule($discs, $part1)) { $part1++; }
-
 	echo 'Part 1: ', $part1, "\n";
+
+	$part2 = 0;
+	$num = array_keys($discs); $num = array_pop($num);
+	$discs[$num + 1] = ['count' => 11, 'start' => 0];
+	while (!canGetCapsule($discs, $part2)) { $part2++; }
+	echo 'Part 2: ', $part2, "\n";
