@@ -35,7 +35,7 @@
 	}
 
 	for ($i = 1; $i < (isTest() ? 10 : 40); $i++) { $rows = addRow($rows); }
-	if (isDebug()) { drawRows($rows); }
+	if (isDebug()) { drawRows($rows); echo "\n"; }
 
 	$part1 = 0;
 	foreach ($rows as $row) { $part1 += substr_count(implode('', $row), '.'); }
@@ -48,8 +48,9 @@
 		for ($i = 1; $i < 400000; $i++) {
 			$row = nextRow($row);
 			$part2 += substr_count(implode('', $row), '.');
-			debugOut($i, ': ', $part2, "\n");
+			debugOut("\r", 'Part 2: ', $i, ' => ', $part2, "\033[0K");
 		}
+		debugOut("\r\033[0K");
 
 		echo 'Part 2: ', $part2, "\n";
 	}
