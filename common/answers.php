@@ -71,7 +71,7 @@
 
 	// Day 18
 	$answers[1][18] = 1989;
-	$answers[2][18] = 0;
+	$answers[2][18] = 19999894;
 
 	// Day 19
 	$answers[1][19] = 0;
