@@ -5,6 +5,17 @@
 	/* Known Answers so far for comparing output after any changes. */
 	require_once(dirname(__FILE__) . '/answers.php');
 
+	/*
+	 * To make code easier to read, sometimes we move "fluff" code to a separate
+	 * file, include it if it exists.
+	 *
+	 * "Fluff" code is code that doesn't really serve to find the actual
+	 * solution, but may instead do nice things with the output.
+	 */
+	if (file_exists(realpath(dirname($_SERVER['PHP_SELF'])) . '/fluff.php')) {
+		require_once(realpath(dirname($_SERVER['PHP_SELF'])) . '/fluff.php');
+	}
+
 	/**
 	 * Get the filen to read input from.
 	 * This will return php://stdin if we have something passed on stdin,
