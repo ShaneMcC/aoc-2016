@@ -3,6 +3,8 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLine();
 
+	if (isset($__CLIOPTS['brute'])) { doBruteForce(); }
+
 	// If an elf count is a power of 2, elf #1 gets the presents.
 	// For every number above that, the next odd elf gets it.
 	function doPart1($input) {
