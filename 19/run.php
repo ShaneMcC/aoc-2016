@@ -23,15 +23,17 @@
 	//
 	// I'm sure there is a formula here somewhere, I just don't know it yet...
 	function doPart2($input) {
-		$i = pow(3, floor(log($input - 1, 3))) + 1;
+		$i = pow(3, floor(log($input, 3)));
 		$nextI = ($i * 3) - 2;
 
 		$mid = ($i + $nextI) / 2;
 
-		if ($input < $mid) {
-			return ($input - $i) + 1;
+		if ($input == $i) {
+			return $i;
+		} else if ($input <= $mid) {
+			return ($input - $i);
 		} else {
-			return (2 * $input) - $mid - $i + 2;
+			return (2 * $input) - $mid - $i - 1;
 		}
 	}
 
