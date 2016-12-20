@@ -13,22 +13,22 @@
 
 	function getAnswers($blocked) {
 		$allowed = 0;
-		$min = $thisStart = $nextEnd = -1;
+		$min = $overlapStart = $overlapEnd = -1;
 
 		foreach ($blocked as $block) {
 			debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
 
-			if ($block['start'] > $nextEnd + 1) {
-				if ($min == -1) { $min = ($nextEnd + 1); }
-				$allowed += $block['start'] - ($nextEnd + 1);
+			if ($block['start'] > $overlapEnd + 1) {
+				if ($min == -1) { $min = ($overlapEnd + 1); }
+				$allowed += $block['start'] - ($overlapEnd + 1);
 			}
 
-			$thisStart = min($thisStart, $block['start']);
-			$nextEnd = max($nextEnd, $block['end']);
+			$overlapStart = min($overlapStart, $block['start']);
+			$overlapEnd = max($overlapEnd, $block['end']);
 		}
 
 		$max = isTest() ? 9 : 4294967295;
-		if ($nextEnd <= $max) { $allowed += $max - $nextEnd; }
+		if ($overlapEnd <= $max) { $allowed += $max - $overlapEnd; }
 
 		return [$min, $allowed];
 	}
