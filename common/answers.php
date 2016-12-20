@@ -79,7 +79,7 @@
 
 	// Day 20
 	$answers[1][20] = 32259706;
-	$answers[2][20] = 0;
+	$answers[2][20] = 113;
 
 	// Day 21
 	$answers[1][21] = 0;

@@ -14,7 +14,7 @@
 	function doPart1($blocked) {
 		$min = 0;
 		foreach ($blocked as $block) {
-			debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
+			// debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
 
 			if ($min < $block['start']) {
 				return $min;
@@ -26,5 +26,28 @@
 		return -1;
 	}
 
+	function doPart2($blocked) {
+		$allowed = 0;
+
+		$thisStart = 0;
+		$nextEnd = 0;
+
+		foreach ($blocked as $block) {
+			debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
+
+			if ($block['start'] > $nextEnd) {
+				$allowed += $block['start'] - $nextEnd;
+			}
+
+			$thisStart = min($thisStart, $block['start']);
+			$nextEnd = max($nextEnd, $block['end'] + 1);
+		}
+
+		return $allowed;
+	}
+
 	$part1 = doPart1($blocked);
 	echo 'Part 1: ', $part1, "\n";
+
+	$part2 = doPart2($blocked);
+	echo 'Part 2: ', $part2, "\n";
