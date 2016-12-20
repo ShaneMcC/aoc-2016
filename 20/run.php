@@ -11,31 +11,14 @@
 	}
 	uasort($blocked, function($a, $b) { return ($a['start'] == $b['start']) ? $a['end'] - $b['end'] : $a['start'] - $b['start']; });
 
-	function doPart1($blocked) {
-		$min = 0;
-		foreach ($blocked as $block) {
-			// debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
-
-			if ($min < $block['start']) {
-				return $min;
-			} else {
-				$min = $block['end'] + 1;
-			}
-		}
-
-		return -1;
-	}
-
-	function doPart2($blocked) {
-		$allowed = 0;
-
-		$thisStart = 0;
-		$nextEnd = 0;
+	function getAnswers($blocked) {
+		$min = $allowed = $thisStart = $nextEnd = 0;
 
 		foreach ($blocked as $block) {
 			debugOut('Blocked: ', $block['start'], ' => ', $block['end'], "\n");
 
 			if ($block['start'] > $nextEnd) {
+				if ($min == 0) { $min = $nextEnd; }
 				$allowed += $block['start'] - $nextEnd;
 			}
 
@@ -43,11 +26,9 @@
 			$nextEnd = max($nextEnd, $block['end'] + 1);
 		}
 
-		return $allowed;
+		return [$min, $allowed];
 	}
+	list($part1, $part2) = getAnswers($blocked);
 
-	$part1 = doPart1($blocked);
 	echo 'Part 1: ', $part1, "\n";
-
-	$part2 = doPart2($blocked);
 	echo 'Part 2: ', $part2, "\n";
