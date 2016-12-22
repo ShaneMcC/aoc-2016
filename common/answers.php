@@ -83,7 +83,7 @@
 
 	// Day 21
 	$answers[1][21] = 'bdfhgeca';
-	$answers[2][21] = 0;
+	$answers[2][21] = 'gdfcabeh';
 
 	// Day 22
 	$answers[1][22] = 0;

@@ -26,17 +26,20 @@
 		}
 	}
 
-	function swapPosition(&$password, $x, $y) {
+	function swapPosition(&$password, $x, $y, $reverse = false) {
 		$password[$x] ^= $password[$y] ^= $password[$x] ^= $password[$y];
 	}
 
-	function swapLetter(&$password, $x, $y) {
+	function swapLetter(&$password, $x, $y, $reverse = false) {
 		$x = array_search($x, $password);
 		$y = array_search($y, $password);
-		swapPosition($password, $x, $y);
+		swapPosition($password, $x, $y, $reverse);
 	}
 
-	function rotate(&$password, $direction, $steps) {
+	function rotate(&$password, $direction, $steps, $reverse = false) {
+		if ($reverse && $direction == 'left') { $direction = 'right'; }
+		else if ($reverse && $direction == 'right') { $direction = 'left'; }
+
 		for ($i = 0; $i < $steps; $i++) {
 			if ($direction == 'left') {
 				array_push($password, array_shift($password));
@@ -46,20 +49,37 @@
 		}
 	}
 
-	function rotateBasedOn(&$password, $x) {
+	function rotateBasedOn(&$password, $x, $reverse = false) {
 		$steps = array_search($x, $password);
-		if ($steps >= 4) { $steps++; }
-		$steps++;
-		rotate($password, 'right', $steps);
+		if ($reverse) {
+			// Array of final position => numberOfRightRotations.
+			// This only works for length-8 passwords, for other lengths (eg 5)
+			// the reversal is non-deterministic:
+			//     "abcde" rotate by "c" => "cdeab"
+			//     "abcde" rotate by "e" => "eabcd"
+			// In both cases, the final position is "0" so when reversing we
+			// have no idea if the original position was index 2 or 4
+			//
+			// I don't like this, but it lets me solve the day, so...
+			$stepPos = [1 => 1, 3 => 2, 5 => 3, 7 => 4, 2 => 6, 4 => 7, 6 => 8, 0 => 9];
+			$steps = $stepPos[$steps];
+		} else {
+			$steps++;
+			if ($steps > 4) { $steps++; }
+		}
+
+		rotate($password, 'right', $steps, $reverse);
 	}
 
-	function reverse(&$password, $x, $y) {
+	function reverse(&$password, $x, $y, $reverse = false) {
 		$mid = array_slice($password, $x, ($y - $x + 1));
 		$mid = array_reverse($mid);
 		array_splice($password, $x, ($y - $x + 1), $mid);
 	}
 
-	function move(&$password, $x, $y) {
+	function move(&$password, $x, $y, $reverse = false) {
+		if ($reverse) { $x ^= $y ^= $x ^= $y; }
+
 		$letter = $password[$x];
 		unset($password[$x]);
 		$password = array_values($password);
@@ -67,13 +87,16 @@
 		array_splice($password, $y, 0, $letter);
 	}
 
-	function scramblePassword($password, $instructions) {
+	function scramblePassword($password, $instructions, $reverse = false) {
 		$password = str_split($password);
+
+		if ($reverse) { $instructions = array_reverse($instructions); }
 
 		foreach ($instructions as $params) {
 			$instr = $params[0];
 			debugOut('[', implode(' ', $params), ': ', implode('', $password), ' => ');
 			$params[0] = &$password;
+			$params[] = $reverse;
 			call_user_func_array($instr, $params);
 			debugOut(implode('', $password), ']', "\n");
 		}
@@ -82,5 +105,10 @@
 	}
 
 	$part1 = scramblePassword(isTest() ? 'abcde' : 'abcdefgh', $instructions);
-
 	echo 'Part 1: ', $part1, "\n";
+
+	if (!isTest()) {
+		debugOut("\n\n");
+		$part2 = scramblePassword('fbgdceah', $instructions, true);
+		echo 'Part 2: ', $part2, "\n";
+	}
