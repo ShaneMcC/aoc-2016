@@ -86,7 +86,7 @@
 	$answers[2][21] = 'gdfcabeh';
 
 	// Day 22
-	$answers[1][22] = 0;
+	$answers[1][22] = 910;
 	$answers[2][22] = 0;
 
 	// Day 23
