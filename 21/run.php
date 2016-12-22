@@ -42,7 +42,7 @@
 		for ($i = 0; $i < $steps; $i++) {
 			if ($direction == 'left') {
 				array_push($password, array_shift($password));
-			} else if ($direction == 'right') {
+			} else {
 				array_unshift($password, array_pop($password));
 			}
 		}
@@ -76,9 +76,7 @@
 	$reverseOps = $ops;
 
 	$reverseOps['rotate'] = function ($password, $direction, $steps) use ($ops) {
-		if ($direction == 'left') { $direction = 'right'; }
-		else if ($direction == 'right') { $direction = 'left'; }
-		return $ops['rotate']($password, $direction, $steps);
+		return $ops['rotate']($password, ($direction == 'left') ? 'right' : 'left', $steps);
 	};
 
 	$reverseOps['rotateBasedOn'] = function ($password, $x, $reverse = false) use ($ops) {
@@ -90,10 +88,7 @@
 		}
 	};
 
-	$reverseOps['move'] = function ($password, $x, $y) use ($ops) {
-		$x ^= $y ^= $x ^= $y;
-		return $ops['move']($password, $x, $y);
-	};
+	$reverseOps['move'] = function ($password, $x, $y) use ($ops) { return $ops['move']($password, $y, $x); };
 
 	function scramblePassword($password, $instructions, $ops) {
 		global $__CLIOPTS;
