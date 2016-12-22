@@ -27,21 +27,18 @@
 		}
 	}
 
-	function swapPosition($password, $x, $y) {
+	$ops['swapPosition'] = function ($password, $x, $y) {
 		$password[$x] ^= $password[$y] ^= $password[$x] ^= $password[$y];
 		return $password;
-	}
+	};
 
-	function swapLetter($password, $x, $y) {
+	$ops['swapLetter'] = function ($password, $x, $y) use ($ops) {
 		$x = array_search($x, $password);
 		$y = array_search($y, $password);
-		return swapPosition($password, $x, $y);
-	}
+		return $ops['swapPosition']($password, $x, $y);
+	};
 
-	function rotate($password, $direction, $steps, $reverse = false) {
-		if ($reverse && $direction == 'left') { $direction = 'right'; }
-		else if ($reverse && $direction == 'right') { $direction = 'left'; }
-
+	$ops['rotate'] = function ($password, $direction, $steps) {
 		for ($i = 0; $i < $steps; $i++) {
 			if ($direction == 'left') {
 				array_push($password, array_shift($password));
@@ -51,55 +48,64 @@
 		}
 
 		return $password;
-	}
+	};
 
-	function rotateBasedOn($password, $x, $reverse = false) {
-		if ($reverse) {
-			for ($i = 0; $i <= count($password); $i++) {
-				$leftRotate = rotate($password, 'left', $i);
-				if (rotateBasedOn($leftRotate, $x) == $password) {
-					return $leftRotate;
-				}
-			}
-		} else {
-			$steps = array_search($x, $password);
-			$steps++;
-			if ($steps > 4) { $steps++; }
-			return rotate($password, 'right', $steps, $reverse);
-		}
-	}
+	$ops['rotateBasedOn'] = function ($password, $x) use ($ops) {
+		$steps = array_search($x, $password);
+		$steps++;
+		if ($steps > 4) { $steps++; }
+		return $ops['rotate']($password, 'right', $steps);
+	};
 
-	function reverse($password, $x, $y) {
+	$ops['reverse'] = function ($password, $x, $y) {
 		$mid = array_slice($password, $x, ($y - $x + 1));
 		$mid = array_reverse($mid);
 		array_splice($password, $x, ($y - $x + 1), $mid);
 		return $password;
-	}
+	};
 
-	function move($password, $x, $y, $reverse = false) {
-		if ($reverse) { $x ^= $y ^= $x ^= $y; }
-
+	$ops['move'] = function ($password, $x, $y) {
 		$letter = $password[$x];
 		unset($password[$x]);
 		$password = array_values($password);
 
 		array_splice($password, $y, 0, $letter);
 		return $password;
-	}
+	};
 
-	function scramblePassword($password, $instructions, $reverse = false) {
+	$reverseOps = $ops;
+
+	$reverseOps['rotate'] = function ($password, $direction, $steps) use ($ops) {
+		if ($direction == 'left') { $direction = 'right'; }
+		else if ($direction == 'right') { $direction = 'left'; }
+		return $ops['rotate']($password, $direction, $steps);
+	};
+
+	$reverseOps['rotateBasedOn'] = function ($password, $x, $reverse = false) use ($ops) {
+		for ($i = 0; $i <= count($password); $i++) {
+			$leftRotate = $ops['rotate']($password, 'left', $i);
+			if ($ops['rotateBasedOn']($leftRotate, $x) == $password) {
+				return $leftRotate;
+			}
+		}
+	};
+
+	$reverseOps['move'] = function ($password, $x, $y) use ($ops) {
+		$x ^= $y ^= $x ^= $y;
+		return $ops['move']($password, $x, $y);
+	};
+
+	function scramblePassword($password, $instructions, $ops) {
 		global $__CLIOPTS;
 		$password = str_split($password);
 
-		if ($reverse) { $instructions = array_reverse($instructions); }
 		if (isset($__CLIOPTS['visual'])) { echo '[', implode('', $password), ']'; }
 
 		foreach ($instructions as $params) {
 			$instr = $params[0];
 			debugOut('[', implode(' ', $params), ': ', implode('', $password), ' => ');
 			$params[0] = &$password;
-			$params[] = $reverse;
-			$password = call_user_func_array($instr, $params);
+			$password = call_user_func_array($ops[$instr], $params);
 			debugOut(implode('', $password), ']', "\n");
 
 			if (isset($__CLIOPTS['visual'])) {
@@ -113,11 +119,11 @@
 		return implode('', $password);
 	}
 
-	$part1 = scramblePassword(isTest() ? 'abcde' : 'abcdefgh', $instructions);
+	$part1 = scramblePassword(isTest() ? 'abcde' : 'abcdefgh', $instructions, $ops);
 	echo 'Part 1: ', $part1, "\n";
 
 	if (!isTest()) {
 		debugOut("\n\n");
-		$part2 = scramblePassword('fbgdceah', $instructions, true);
+		$part2 = scramblePassword('fbgdceah', array_reverse($instructions), $reverseOps);
 		echo 'Part 2: ', $part2, "\n";
 	}
