@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+	$__CLI['long'] = ['visual'];
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
@@ -88,9 +89,11 @@
 	}
 
 	function scramblePassword($password, $instructions, $reverse = false) {
+		global $__CLIOPTS;
 		$password = str_split($password);
 
 		if ($reverse) { $instructions = array_reverse($instructions); }
+		if (isset($__CLIOPTS['visual'])) { echo '[', implode('', $password), ']'; }
 
 		foreach ($instructions as $params) {
 			$instr = $params[0];
@@ -99,7 +102,14 @@
 			$params[] = $reverse;
 			call_user_func_array($instr, $params);
 			debugOut(implode('', $password), ']', "\n");
+
+			if (isset($__CLIOPTS['visual'])) {
+				echo "\r", '[', implode('', $password), ']';
+				usleep(50000);
+			}
 		}
+
+		if (isset($__CLIOPTS['visual'])) { echo "\r"; }
 
 		return implode('', $password);
 	}
