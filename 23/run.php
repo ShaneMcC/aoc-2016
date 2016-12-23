@@ -301,3 +301,10 @@
 	$vm->setReg('a', 7);
 	$vm->run();
 	echo 'Part 1: ', $vm->dumpReg(), "\n";
+
+	debugOut("\n\n");
+
+	$vm->loadProgram($data);
+	$vm->setReg('a', 12);
+	$vm->run();
+	echo 'Part 2: ', $vm->dumpReg(), "\n";
