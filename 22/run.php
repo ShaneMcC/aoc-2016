@@ -55,3 +55,30 @@
 	}
 
 	echo 'Part 1: ', getViableNodesCount($grid), "\n";
+
+	require_once(dirname(__FILE__) . '/pathfinder.php');
+
+	foreach ($grid as $y => $xs) {
+		foreach ($xs as $x => $node) {
+			if ($node['used'] == 0) {
+				$start = [$x, $y];
+			}
+		}
+	}
+	$target = [count($grid[0]) -1, 0];
+
+	$isAccessible = function($state, $x, $y) {
+		return count(getPossibleNodes($state['grid'], $state['grid'][$y][$x]['used'], [$x, $y])) > 0;
+	};
+
+	// Find shortest path to move the empty hole to the top-right corner
+	$emptyToTarget = new PathFinder($grid, $start, $target, $isAccessible);
+	$pathToGoal = $emptyToTarget->solveMaze();
+	$part2 = $pathToGoal[0]['steps'];
+
+	// Maths the rest of it. It takes us 5 steps to move the Goal 1 step to
+	// the left, so do this for how ever many steps we need to move it.
+	$part2 += ((count($grid[0]) - 2) * 5);
+
+	// Answer.
+	echo 'Part 2: ', $part2, "\n";
