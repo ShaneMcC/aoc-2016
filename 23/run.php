@@ -43,18 +43,15 @@
 	//
 	//    Sets A = b * d
 	//    Clears C and D.
-	//
-	//    Naive optimisation, assumes that instructions in that order are always
-	//    going to be the thing we need.
 	for ($i = 0; $i < count($data); $i++) {
 		if (!isset($data[$i + 5])) { break; }
 
 		if ($data[$i][0] == 'cpy' &&
 			$data[$i + 1][0] == 'inc' &&
 			$data[$i + 2][0] == 'dec' &&
-			$data[$i + 3][0] == 'jnz' &&
+			$data[$i + 3][0] == 'jnz' && $data[$i + 3][1][1] == '-2' &&
 			$data[$i + 4][0] == 'dec' &&
-			$data[$i + 5][0] == 'jnz') {
+			$data[$i + 5][0] == 'jnz' && $data[$i + 5][1][1] == '-5') {
 
 			$data[$i][0] = '_OPT_MUL';
 
