@@ -43,6 +43,7 @@
 	$vm->setInstr('_OPT_NOOP', function($vm, $args) { debugOut('_OPT_NOOP [', implode(' ', $args), ']', "\n"); });
 
 
+	$vm->loadProgram($data);
 	$vm->run();
 	echo 'Part 1: ', $vm->dumpReg(), "\n";
 
