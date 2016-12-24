@@ -1,4 +1,5 @@
 <?php
+	require_once(dirname(__FILE__) . '/VMOptimisations.php');
 
 	/**
 	 * Simple 4-register, 4-instruction VM for Day 12.
@@ -15,6 +16,9 @@
 
 		/** Data to execute. */
 		private $data = array();
+
+		/** Read ahead optimisations */
+		private $readAheads = array();
 
 		/**
 		 * Create a new VM.
@@ -72,10 +76,11 @@
 		/**
 		 * Get the data at the given location.
 		 *
-		 * @param $location Data location.
+		 * @param $location Data location (or NULL for current).
 		 * @return Data from location.
 		 */
-		public function getData($loc) {
+		public function getData($loc = null) {
+			if ($loc == null) { $loc = $this->getLocation(); }
 			if (isset($this->data[$loc])) { return $this->data[$loc]; }
 			throw new Exception('Unknown Data Location: ' . $loc);
 		}
@@ -83,10 +88,11 @@
 		/**
 		 * Set the data at the given location.
 		 *
-		 * @param $location Data location.
+		 * @param $location Data location (or NULL for current).
 		 * @param $val New Value
 		 */
 		public function setData($loc, $val) {
+			if ($loc == null) { $loc = $this->getLocation(); }
 			if (isset($this->data[$loc])) {
 				$this->data[$loc] = $val;
 			} else {
@@ -109,7 +115,6 @@
 			 * @param $args Args for this instruction.
 			 */
 			$this->instrs['cpy'] = function($vm, $args) {
-				debugOut('cpy [', implode(' ', $args), ']', "\n");
 				$x = $args[0];
 				$y = $args[1];
 				if ($vm->isReg($x)) { $x = $vm->getReg($x); }
@@ -127,7 +132,6 @@
 			 * @param $args Args for this instruction.
 			 */
 			$this->instrs['inc'] = function($vm, $args) {
-				debugOut('inc [', implode(' ', $args), ']', "\n");
 				$reg = $args[0];
 				if (!$vm->isReg($reg)) { return; }
 				$val = $vm->getReg($reg) + 1;
@@ -144,7 +148,6 @@
 			 * @param $args Args for this instruction.
 			 */
 			$this->instrs['dec'] = function($vm, $args) {
-				debugOut('dec [', implode(' ', $args), ']', "\n");
 				$reg = $args[0];
 				if (!$vm->isReg($reg)) { return; }
 				$val = $vm->getReg($reg) - 1;
@@ -162,8 +165,6 @@
 			 * @param $args Args for this instruction.
 			 */
 			$this->instrs['jnz'] = function($vm, $args) {
-				debugOut('jnz [', implode(' ', $args), ']', "\n");
-
 				$x = $args[0];
 				$y = $args[1];
 
@@ -203,11 +204,19 @@
 		function step() {
 			if (isset($this->data[$this->location + 1])) {
 				$this->location++;
+
+				$optimise = $this->doReadAheads();
+				// If we optimised, assume we did something, and then we'll
+				// continue in he next step
+				if ($optimise !== false) {
+					// -1 because step() does ++
+					$this->location = $optimise - 1;
+					return TRUE;
+				}
+
 				$next = $this->data[$this->location];
-
-				$instr = $next[0];
-				$data = $next[1];
-
+				debugOut(VM::instrToString($next), "\n");
+				list($instr, $data) = $next;
 				$ins = $this->getInstr($instr);
 				$ins($this, $data);
 
@@ -215,6 +224,41 @@
 			} else {
 				return FALSE;
 			}
+		}
+
+		/**
+		 * Read ahead in the script to optimise where possible.
+		 * This is called AFTER the location pointer has been moved, but before
+		 * the instruction is read.
+		 *
+		 * Optimisations can either edit the instructions and allow continued
+		 * execution (return $vm->getLocation()) or can perform the required
+		 * state manipulation themselves and provide a new location to continue
+		 * from.
+		 *
+		 * We stop processing optimisations after the first non-FALSE return.
+		 *
+		 * @return FALSE if no optimisations were made, else a location index
+		 *         for the next instruction we should run.
+		 */
+		function doReadAheads() {
+			foreach ($this->readAheads as $function) {
+				$return = call_user_func($function, $this);
+				if ($return !== FALSE && $return !== NULL) { return $return; }
+			}
+			return FALSE;
+		}
+
+		/**
+		 * Add a new ReadAhead optimiser for doReadAheads to use.
+		 *
+		 * @param $function Function to call in doReadAheads, should accept 1
+		 *        parameter (which will be $this)  and return FALSE if no
+		 *        optimisation occured, or a new location to continue execution
+		 *        from.
+		 */
+		function addReadAhead($function) {
+			$this->readAheads[] = $function;
 		}
 
 		/**
@@ -285,4 +329,13 @@
 			return $data;
 		}
 
+		/**
+		 * Display an instruction as a string.
+		 *
+		 * @param $instr Instruction to get string representation for.
+		 * @return  String version of instruction.
+		 */
+		public static function instrToString($instr) {
+			return $instr[0] . ' [' . implode(' ', $instr[1]) . ']';
+		}
 	}
