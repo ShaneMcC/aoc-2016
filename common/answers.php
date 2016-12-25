@@ -99,5 +99,5 @@
 
 	// Day 25
 	$answers[1][25] = 0;
-	$answers[2][25] = 0;
+	$answers[2][25] = -1;
 
