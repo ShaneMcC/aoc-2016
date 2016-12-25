@@ -23,9 +23,9 @@
 				$data[2][0] == 'jnz' && $data[2][1][0] == $data[1][1][0] && $data[2][1][1] == '-2') {
 
 				debugOut('Optimised Add: ');
-				debugOut(instrToString($data[0]), ' -> ');
-				debugOut(instrToString($data[1]), ' -> ');
-				debugOut(instrToString($data[2]), "\n");
+				debugOut(VM::instrToString($data[0]), ' -> ');
+				debugOut(VM::instrToString($data[1]), ' -> ');
+				debugOut(VM::instrToString($data[2]), "\n");
 
 				list($a, $b) = [$data[0][1][0], $data[1][1][0]];
 
@@ -75,12 +75,12 @@
 				if (!$vm->isReg($a) || !$vm->isReg($c) || !$vm->isReg($d)) { return FALSE; }
 
 				debugOut('Optimised Multiply: ');
-				debugOut(instrToString($data[0]), ' -> ');
-				debugOut(instrToString($data[1]), ' -> ');
-				debugOut(instrToString($data[2]), ' -> ');
-				debugOut(instrToString($data[3]), ' -> ');
-				debugOut(instrToString($data[4]), ' -> ');
-				debugOut(instrToString($data[5]), "\n");
+				debugOut(VM::instrToString($data[0]), ' -> ');
+				debugOut(VM::instrToString($data[1]), ' -> ');
+				debugOut(VM::instrToString($data[2]), ' -> ');
+				debugOut(VM::instrToString($data[3]), ' -> ');
+				debugOut(VM::instrToString($data[4]), ' -> ');
+				debugOut(VM::instrToString($data[5]), "\n");
 
 				$bVal = $vm->isReg($b) ? $vm->getReg($b) : $b;
 				$dVal = $vm->getReg($d);

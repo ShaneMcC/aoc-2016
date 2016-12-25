@@ -3,8 +3,17 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	require_once(dirname(__FILE__) . '/../12/vm.php');
 
+	class TransmitterVM extends VM {
+		private $output = '';
+		public function clearOutput() { $this->output = ''; }
+		public function getOutput() { return $this->output; }
+		public function getOutputLength() { return strlen($this->output); }
+		public function appendOutput($str) { $this->output .= $str; }
+		public function reset() { $this->clearOutput(); parent::reset(); }
+	}
+
 	$data = VM::parseInstrLines(getInputLines());
-	$vm = new VM($data);
+	$vm = new TransmitterVM($data);
 	optimiseAll($vm);
 
 	/**
@@ -17,29 +26,26 @@
 	 * @param $args Args for this instruction.
 	 */
 	$vm->setInstr('out', function($vm, $args) {
-		global $STRING;
 		$x = $args[0];
 		if ($vm->isReg($x)) { $x = $vm->getReg($x); }
 
-		$STRING .= $x;
-		if (strlen($STRING) >= 10) { throw new Exception('outed a bit'); }
+		$vm->appendOutput($x);
+
+		$lastChars = substr($vm->getOutput(), -2);
+		if (strlen($lastChars) == 2 && ($lastChars == '11' || $lastChars == '00')) {
+			$vm->end(1); // Bad output, exit.
+		} else if ($vm->getOutputLength() >= 10) {
+			$vm->end(0); // We've probably got right code, exit.
+		}
 	});
 
-	$vm->addReadAhead(function ($vm) {
-		$loc = $vm->getLocation();
-		$data = $vm->getData();
-		if ($data[0] == 'jnz' && $data[1][0] == '0' && $data[1][1] == '0') { return $loc + 1; }
-		return FALSE;
-	});
-
-	for ($i = 0; $i < 1000; $i++) {
-		try {
-			$vm->loadProgram($data);
-			$vm->setReg('a', $i);
-			$STRING = '';
-			$vm->run();
-		} catch (Exception $e) { }
-		echo $i, ': ', $STRING, "\n";
-
-		if ($STRING == '0101010101') { die(); }
+	$i = 150;
+	while (true) {
+		$vm->reset();
+		$vm->setReg('a', $i);
+		$vm->run();
+		echo $i, ': ', $vm->getOutput(), "\r";
+		if ($vm->exitCode() == 0) { break; } else { $i++; }
 	}
+
+	echo 'Part 1: ', $i, "\n";

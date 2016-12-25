@@ -20,6 +20,9 @@
 		/** Read ahead optimisations */
 		private $readAheads = array();
 
+		/** Our exit code. */
+		private $exitCode = 0;
+
 		/**
 		 * Create a new VM.
 		 *
@@ -37,8 +40,41 @@
 		 */
 		function loadProgram($data) {
 			$this->data = $data;
+			$this->reset();
+		}
+
+		/**
+		 * Reset the VM.
+		 *
+		 * This resets the registers to all-0 and moves the location to the
+		 * beginning.
+		 */
+		function reset() {
+			$this->exitCode = 0;
 			$this->location = -1;
 			$this->registers = array('a' => 0, 'b' => 0, 'c' => 0, 'd' => 0);
+		}
+
+		/**
+		 * End program execution.
+		 *
+		 * This sets the location to beyond the data range, effectively
+		 * stopping execution.
+		 *
+		 * @param $exitCode Set the exit code.
+		 */
+		function end($exitCode = 0) {
+			$this->location = count($this->data);
+			$this->exitCode = $exitCode;
+		}
+
+		/**
+		 * Get the vm exit code.
+		 *
+		 * @return The program exit code.
+		 */
+		function exitCode() {
+			return $this->exitCode;
 		}
 
 		/**
@@ -98,7 +134,6 @@
 			} else {
 				throw new Exception('Unknown Data Location: ' . $loc);
 			}
-
 		}
 
 		/**
@@ -170,7 +205,7 @@
 
 				if ($vm->isReg($x)) { $x = $vm->getReg($x); }
 				if ($vm->isReg($y)) { $y = $vm->getReg($y); }
-				if ($x === 0) { return; }
+				if ((integer)$x === 0) { return; }
 
 				$newloc = $vm->getLocation() + (int)$y;
 				$this->jump($newloc - 1); // (-1 because step() always does +1)
@@ -215,7 +250,8 @@
 				}
 
 				$next = $this->data[$this->location];
-				debugOut(VM::instrToString($next), "\n");
+				debugOut(sprintf('(%2s) ', $this->location), VM::instrToString($next), "\n");
+				if (isDebug()) { usleep(25000); }
 				list($instr, $data) = $next;
 				$ins = $this->getInstr($instr);
 				$ins($this, $data);
