@@ -26,6 +26,7 @@
 	}
 	sort($numbers);
 
+
 	function getPathLength($grid, $begin, $end) {
 		$start = findPosition($grid, $begin);
 		$target = findPosition($grid, $end);
@@ -40,6 +41,7 @@
 
 	function getNodeLengths($grid, $numbers) {
 		global $__NLCACHE;
+		$numbers = array_unique($numbers);
 		sort($numbers);
 		$hash = crc32(serialize($numbers));
 
@@ -71,11 +73,11 @@
 		return $length;
 	}
 
-	function getShortest($grid, $start, $numbers) {
+	function getShortest($grid, $start, $numbers, $backToStart = false) {
 		$bestLength = -1;
 		$bestPath = NULL;
 		foreach (getPermutations($numbers) as $path) {
-			$path = array_merge([$start], $path);
+			$path = $backToStart ? array_merge([$start], $path, [$start]) : array_merge([$start], $path);
 			$length = getLength($grid, $path, $bestLength);
 
 			if (($length !== FALSE) && ($bestLength == -1 || $bestLength > $length)) {
@@ -90,6 +92,8 @@
 	// Pop 0 off the start of the list as we always start there.
 	array_shift($numbers);
 	$part1 = getShortest($grid, '0', $numbers);
-
 	echo 'Part 1: ', implode(' -> ', $part1[0]), ' => ', $part1[1], "\n";
 
+	// Now with 0 at the end as well.
+	$part2 = getShortest($grid, '0', $numbers, true);
+	echo 'Part 2: ', implode(' -> ', $part2[0]), ' => ', $part2[1], "\n";

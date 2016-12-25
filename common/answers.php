@@ -95,7 +95,7 @@
 
 	// Day 24
 	$answers[1][24] = 470;
-	$answers[2][24] = 0;
+	$answers[2][24] = 720;
 
 	// Day 25
 	$answers[1][25] = 0;
