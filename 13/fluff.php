@@ -15,8 +15,8 @@
 		if (isset($maze[$y][$x])) { $maze[$y][$x] = $char; }
 	}
 
-	function drawState($state, $redraw = true) {
-		global $__CLIOPTS, $visted;
+	function drawState($state, $visted, $redraw = true) {
+		global $__CLIOPTS;
 
 		if (isset($__CLIOPTS['drawSearch'])) {
 			$maxX = isset($__CLIOPTS['width']) ? $__CLIOPTS['width'] : (isTest() ? 10 : 50);
