@@ -6,6 +6,8 @@
 	$start = [0, 0];
 	$end = [3, 3];
 
+	// TODO: Rewrite with PathFinder
+
 	$initialState = array('current' => $start, 'target' => $end, 'previous' => '', 'steps' => 0);
 
 	function getDirections($state) {
