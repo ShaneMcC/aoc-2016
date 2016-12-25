@@ -39,7 +39,7 @@
 		}
 	});
 
-	$i = 150;
+	$i = 0;
 	while (true) {
 		$vm->reset();
 		$vm->setReg('a', $i);
