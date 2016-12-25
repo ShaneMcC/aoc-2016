@@ -8,11 +8,10 @@
 
 		var $hooks = array();
 
-		function __construct($grid, $start, $end, $isAccessible = null) {
+		function __construct($grid, $start, $end) {
 			$this->initialState = ['grid' => $grid, 'current' => $start, 'target' => $end, 'steps' => 0, 'previous' => []];
 
-			$this->hooks['isAccessible'] = ($isAccessible != null) ? $isAccessible : function($state, $x, $y) { return false; };
-
+			$this->hooks['isAccessible'] = function($state, $x, $y) { return false; };
 			$this->hooks['isValidLocation'] = function ($state, $x, $y) {
 				list($curX, $curY) = $state['current'];
 				if (!isset($state['grid'][$y][$x])) { return FALSE; } // Ignore Invalid

@@ -54,8 +54,8 @@
 			$start = $this->numbers[$begin];
 			$target = $this->numbers[$end];
 
-			$isAccessible = function($state, $x, $y) { return $state['grid'][$y][$x] != '#'; };
-			$pathFinder = new PathFinder($this->grid, $start, $target, $isAccessible);
+			$pathFinder = new PathFinder($this->grid, $start, $target);
+			$pathFinder->setHook('isAccessible', function($state, $x, $y) { return $state['grid'][$y][$x] != '#'; });
 			$path = $pathFinder->solveMaze();
 
 			return $path[0]['steps'];

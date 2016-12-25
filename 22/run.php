@@ -66,12 +66,11 @@
 	}
 	$target = [count($grid[0]) -1, 0];
 
-	$isAccessible = function($state, $x, $y) {
-		return count(getPossibleNodes($state['grid'], $state['grid'][$y][$x]['used'], [$x, $y])) > 0;
-	};
-
 	// Find shortest path to move the empty hole to the top-right corner
-	$emptyToTarget = new PathFinder($grid, $start, $target, $isAccessible);
+	$emptyToTarget = new PathFinder($grid, $start, $target);
+	$emptyToTarget->setHook('isAccessible', function($state, $x, $y) {
+		return count(getPossibleNodes($state['grid'], $state['grid'][$y][$x]['used'], [$x, $y])) > 0;
+	});
 	$pathToGoal = $emptyToTarget->solveMaze();
 	$part2 = $pathToGoal[0]['steps'];
 
