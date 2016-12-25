@@ -34,7 +34,7 @@
 		$lastChars = substr($vm->getOutput(), -2);
 		if (strlen($lastChars) == 2 && ($lastChars == '11' || $lastChars == '00')) {
 			$vm->end(1); // Bad output, exit.
-		} else if ($vm->getOutputLength() >= 10) {
+		} else if ($vm->getOutputLength() >= 12) {
 			$vm->end(0); // We've probably got right code, exit.
 		}
 	});
