@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
+	require_once(dirname(__FILE__) . '/../common/pathfinder.php');
 	$input = getInputLines();
 
 	$grid = array();
@@ -55,8 +56,6 @@
 	}
 
 	echo 'Part 1: ', getViableNodesCount($grid), "\n";
-
-	require_once(dirname(__FILE__) . '/pathfinder.php');
 
 	foreach ($grid as $y => $xs) {
 		foreach ($xs as $x => $node) {

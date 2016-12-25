@@ -45,14 +45,10 @@
 		}
 
 		function solveMaze($maxSteps = -1) {
-			global $__CLIOPTS, $visted;
-
 			$beginState = $this->initialState;
 
 			$visted = [$beginState['current']];
 			$states = [$beginState];
-
-			if (isset($__CLIOPTS['drawSearch']) && function_exists('drawState')) { drawState($beginState, false); }
 
 			$finalState = FALSE;
 
@@ -60,23 +56,15 @@
 				$state = array_shift($states);
 
 				if ($maxSteps == -1 && $this->isFinished($state)) {
-					debugOut('Finished With: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
-					if ((isDebug() || isset($__CLIOPTS['drawSearch'])) && function_exists('drawState')) { drawState($state); }
 					$finalState = $state;
 					break;
-				} else {
-					debugOut('Testing: [', $state['steps'], '] {', implode(', ', $state['current']), '}', "\n");
-					if ((isDebug() || isset($__CLIOPTS['drawSearch'])) && function_exists('drawState')) { drawState($state); }
 				}
 
 				$options = $this->getOptions($state);
-				debugOut("\t", 'Found Options: ', count($options), "\n");
 				foreach ($options as $opt) {
 					if (!in_array($opt['current'], $visted) && ($maxSteps <= 0 || $opt['steps'] <= $maxSteps)) {
 						$visted[] = $opt['current'];
 						$states[] = $opt;
-
-						debugOut("\t\t", 'New Option: ', implode(', ', $opt['current']), "\n");
 					}
 				}
 

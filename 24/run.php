@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	require_once(dirname(__FILE__) . '/../22/pathfinder.php');
+	require_once(dirname(__FILE__) . '/../common/pathfinder.php');
 	$grid = array();
 	foreach (getInputLines() as $row) { $grid[] = str_split($row); }
 
