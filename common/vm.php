@@ -23,6 +23,9 @@
 		/** Our exit code. */
 		private $exitCode = 0;
 
+		/** Output from the VM. */
+		private $output = '';
+
 		/**
 		 * Create a new VM.
 		 *
@@ -53,6 +56,7 @@
 			$this->exitCode = 0;
 			$this->location = -1;
 			$this->registers = array('a' => 0, 'b' => 0, 'c' => 0, 'd' => 0);
+			$this->clearOutput();
 		}
 
 		/**
@@ -75,6 +79,40 @@
 		 */
 		function exitCode() {
 			return $this->exitCode;
+		}
+
+		/**
+		 * Clear stored output.
+		 */
+		public function clearOutput() {
+			$this->output = '';
+		}
+
+		/**
+		 * Get stored output.
+		 *
+		 * @return The stored output.
+		 */
+		public function getOutput() {
+			return $this->output;
+		}
+
+		/**
+		 * Get the length of the stored output.
+		 *
+		 * @return The length of the stored output.
+		 */
+		public function getOutputLength() {
+			return strlen($this->output);
+		}
+
+		/**
+		 * Append data to the output.
+		 *
+		 * @param $str String to append to output.
+		 */
+		public function appendOutput($str) {
+			$this->output .= $str;
 		}
 
 		/**

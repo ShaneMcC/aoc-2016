@@ -98,6 +98,6 @@
 	$answers[2][24] = 720;
 
 	// Day 25
-	$answers[1][25] = 0;
-	$answers[2][25] = -1;
+	$answers[1][25] = 158;
+	$answers[2][25] = NULL;
 

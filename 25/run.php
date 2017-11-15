@@ -3,17 +3,8 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	require_once(dirname(__FILE__) . '/../common/vm.php');
 
-	class TransmitterVM extends VM {
-		private $output = '';
-		public function clearOutput() { $this->output = ''; }
-		public function getOutput() { return $this->output; }
-		public function getOutputLength() { return strlen($this->output); }
-		public function appendOutput($str) { $this->output .= $str; }
-		public function reset() { $this->clearOutput(); parent::reset(); }
-	}
-
 	$data = VM::parseInstrLines(getInputLines());
-	$vm = new TransmitterVM($data);
+	$vm = new VM($data);
 	optimiseAll($vm);
 
 	/**
