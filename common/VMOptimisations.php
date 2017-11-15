@@ -6,6 +6,11 @@
 	 *    1: dec b
 	 *    2: jnz b -2
 	 *
+     * OR
+	 *    0: dec b
+	 *    1: inc a
+	 *    2: jnz b -2
+	 *
 	 *    A += B;
 	 *    B = 0
 	 */
@@ -17,17 +22,31 @@
 			$data = [];
 			for ($i = 0; $i <= 2; $i++) { $data[$i] = $vm->getData($loc + $i); }
 
+			$type = 0;
+
 			// Check for matching instructions.
 			if ($data[0][0] == 'inc' &&
 				$data[1][0] == 'dec' &&
 				$data[2][0] == 'jnz' && $data[2][1][0] == $data[1][1][0] && $data[2][1][1] == '-2') {
+				$type = 1;
+			} else if ($data[0][0] == 'dec' &&
+				$data[1][0] == 'inc' &&
+				$data[2][0] == 'jnz' && $data[2][1][0] == $data[0][1][0] && $data[2][1][1] == '-2') {
 
+				$type = 2;
+			}
+
+			if ($type > 0) {
 				debugOut('Optimised Add: ');
 				debugOut(VM::instrToString($data[0]), ' -> ');
 				debugOut(VM::instrToString($data[1]), ' -> ');
 				debugOut(VM::instrToString($data[2]), "\n");
 
-				list($a, $b) = [$data[0][1][0], $data[1][1][0]];
+				if ($type == 1) {
+					list($a, $b) = [$data[0][1][0], $data[1][1][0]];
+				} else if ($type == 2) {
+					list($b, $a) = [$data[0][1][0], $data[1][1][0]];
+				}
 
 				$bVal = $vm->isReg($b) ? $vm->getReg($b) : $b;
 
