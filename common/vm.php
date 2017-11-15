@@ -250,7 +250,7 @@
 				}
 
 				$next = $this->data[$this->location];
-				debugOut(sprintf('(%2s) ', $this->location), VM::instrToString($next), "\n");
+				debugOut(sprintf('(%4s) ', $this->location), VM::instrToString($next), "\n");
 				if (isDebug()) { usleep(25000); }
 				list($instr, $data) = $next;
 				$ins = $this->getInstr($instr);
