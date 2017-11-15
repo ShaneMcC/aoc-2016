@@ -26,6 +26,12 @@
 		/** Output from the VM. */
 		private $output = '';
 
+		/** Is debug mode enabled? */
+		private $debug = false;
+
+		/** Sleep time between debug output. */
+		private $sleep = 25000;
+
 		/**
 		 * Create a new VM.
 		 *
@@ -113,6 +119,19 @@
 		 */
 		public function appendOutput($str) {
 			$this->output .= $str;
+		}
+
+		/**
+		 * Set the value of debugging.
+		 *
+		 * @param $debug New value for debugging.
+		 * @param $sleep (Default: 25000) Time between debug output lines (NULL not to change)
+		 */
+		public function setDebug($debug, $sleep = NULL) {
+			$this->debug = $debug;
+			if ($sleep !== NULL) {
+				$this->sleep = $sleep;
+			}
 		}
 
 		/**
@@ -288,8 +307,10 @@
 				}
 
 				$next = $this->data[$this->location];
-				debugOut(sprintf('(%4s) ', $this->location), VM::instrToString($next), "\n");
-				if (isDebug()) { usleep(25000); }
+				if ($this->debug) {
+					echo sprintf('(%4s) ', $this->location), VM::instrToString($next), "\n";
+					usleep($this->sleep);
+				}
 				list($instr, $data) = $next;
 				$ins = $this->getInstr($instr);
 				$ins($this, $data);
