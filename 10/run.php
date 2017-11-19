@@ -24,7 +24,7 @@
 	function giveValue($target, $value) {
 		global $outputs;
 		debugOut("\t", sprintf('%s was given [%2d]', $target, $value), "\n");
-		if (!isset($outputs[$target])) { $outputs[$target] = ['values' => '']; }
+		if (!isset($outputs[$target])) { $outputs[$target] = ['values' => []]; }
 		$outputs[$target]['values'][] = $value;
 		processOutput($target);
 	}

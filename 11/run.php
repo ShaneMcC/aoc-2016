@@ -92,7 +92,7 @@
 			$i++;
 		}
 
-		$hash = '';
+		$hash = [];
 		foreach ($state['floors'] as $floor => $items) {
 			$str = [];
 			foreach ($items as $item) {
