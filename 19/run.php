@@ -35,3 +35,9 @@
 
 	$part2 = doPart2($input);
 	echo 'Part 2: ', $part2, "\n";
+
+	/* for ($i = 1; $i <= 100; $i++) {
+		$ans = bruteforcePart2($i);
+		$testAns = doPart2($i);
+		echo $i, ': ', $ans, ' => ', $testAns, ($ans == 1 ? ' ***' : ''), ($ans == $testAns ? ' @@@@@@@@@@@@@@@@' : ''), "\n";
+	} */
