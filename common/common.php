@@ -2,9 +2,6 @@
 	/* Some of these are not memory efficient, so don't bother caring. */
 	ini_set('memory_limit', '-1');
 
-	/* Known Answers so far for comparing output after any changes. */
-	require_once(dirname(__FILE__) . '/answers.php');
-
 	/*
 	 * To make code easier to read, sometimes we move "fluff" code to a separate
 	 * file, include it if it exists.
